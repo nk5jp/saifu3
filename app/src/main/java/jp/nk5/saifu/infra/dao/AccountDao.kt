@@ -7,5 +7,5 @@ import jp.nk5.saifu.infra.entity.EntityAccount
 @Dao
 interface AccountDao {
     @Query("SELECT * FROM accounts")
-    fun getAll(): List<EntityAccount>
+    fun selectAll(): List<EntityAccount>
 }
