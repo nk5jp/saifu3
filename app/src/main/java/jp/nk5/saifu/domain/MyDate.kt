@@ -1,5 +1,9 @@
 package jp.nk5.saifu.domain
 
+/**
+ * 日付を意味するドメイン
+ * 2種類のコンストラクタからインスタンス化できるようにする。
+ */
 class MyDate {
     val year: Int
     val month: Int
