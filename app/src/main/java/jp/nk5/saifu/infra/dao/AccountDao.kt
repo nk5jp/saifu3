@@ -2,10 +2,10 @@ package jp.nk5.saifu.infra.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import jp.nk5.saifu.infra.entity.Account
+import jp.nk5.saifu.infra.entity.EntityAccount
 
 @Dao
 interface AccountDao {
-    @Query("SELECT * FROM account")
-    fun getAll(): List<Account>
+    @Query("SELECT * FROM accounts")
+    fun getAll(): List<EntityAccount>
 }
