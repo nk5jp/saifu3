@@ -8,7 +8,7 @@ import jp.nk5.saifu.domain.Account
 @Entity(tableName = "accounts")
 data class EntityAccount(
     @PrimaryKey(autoGenerate = true)
-    val uid: Int,
+    val id: Int,
     val name: String,
     val amount: Int,
     @ColumnInfo(name = "is_valid") val isValid: Boolean
