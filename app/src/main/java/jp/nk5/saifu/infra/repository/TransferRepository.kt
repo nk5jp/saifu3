@@ -16,14 +16,14 @@ class TransferRepository(
     /**
      * 新しい振替を保存する処理
      */
-    override fun setTransfer(myDate: MyDate, debit: Account, credit: Account?, amount: Int) {
+    override fun setTransfer(transfer: Transfer) {
         db.transferDao().insertTransfer(
             EntityTransfer(
                 0,
-                myDate.getYmd(),
-                debit.id,
-                credit?.id,
-                amount
+                transfer.date.getYmd(),
+                transfer.debit.id,
+                transfer.credit?.id,
+                transfer.amount
             )
         )
     }
