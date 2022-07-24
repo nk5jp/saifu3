@@ -11,6 +11,6 @@ data class EntityTransfer (
     @PrimaryKey(autoGenerate = true) val id: Int,
     val date: Int,
     @ColumnInfo(name = "debit_id") val debitId: Int,
-    @ColumnInfo(name = "credit_id") val creditId: Int,
+    @ColumnInfo(name = "credit_id") val creditId: Int?,
     val amount: Int
 )
