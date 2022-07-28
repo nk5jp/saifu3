@@ -9,10 +9,10 @@ import androidx.room.PrimaryKey
     foreignKeys = [ForeignKey(
         entity = EntityReceipt::class,
         parentColumns = arrayOf("id"),
-        childColumns = arrayOf("receiptId"),
+        childColumns = arrayOf("receipt_id"),
         onDelete = ForeignKey.CASCADE
     )],
-    primaryKeys = ["receiptId", "detailId"]
+    primaryKeys = ["receipt_id", "detail_id"]
 )
 data class EntityReceiptDetail(
         @ColumnInfo(name = "receipt_id") val receiptId: Int,

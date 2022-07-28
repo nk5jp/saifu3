@@ -7,9 +7,7 @@ import jp.nk5.saifu.infra.entity.EntityReceiptDetail
 @Dao
 interface ReceiptDao {
 
-    @Query("select * from receipts " +
-            "inner join receipt_details on receipts.id = receipt_details.receipt_id" +
-            "where receipts.date = :ymd")
+    @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.date = :ymd")
     fun selectByYearMonth(ymd: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
 
     @Insert

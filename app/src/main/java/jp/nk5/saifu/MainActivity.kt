@@ -30,10 +30,6 @@ class MainActivity : AppCompatActivity() {
             val repository: AccountRepository = jp.nk5.saifu.infra.repository.AccountRepository(db)
             var lists = repository.getAccounts()
             print(lists)
-            repository.setAccount("test", 125, true)
-            lists = repository.getAccounts()
-            print(lists)
-            repository.setAccount(lists[0], "test2", 128, false)
         }
     }
 
