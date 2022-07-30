@@ -13,10 +13,44 @@
         <action
             android:id="@+id/action_mainFragment_to_transferFragment"
             app:destination="@id/transferFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_receiptFragment"
+            app:destination="@id/receiptFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/transferFragment"
         android:name="jp.nk5.saifu.fragment.TransferFragment"
         android:label="fragment_transfer"
-        tools:layout="@layout/fragment_transfer" />
+        tools:layout="@layout/fragment_transfer" >
+        <action
+            android:id="@+id/action_transferFragment_to_accountFragment"
+            app:destination="@id/accountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/receiptFragment"
+        android:name="jp.nk5.saifu.fragment.ReceiptFragment"
+        android:label="fragment_receipt"
+        tools:layout="@layout/fragment_receipt" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="jp.nk5.saifu.fragment.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_searchDetailFragment"
+            app:destination="@id/searchDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="jp.nk5.saifu.fragment.AccountFragment"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account" />
+    <fragment
+        android:id="@+id/searchDetailFragment"
+        android:name="jp.nk5.saifu.fragment.SearchDetailFragment"
+        android:label="fragment_search_detail"
+        tools:layout="@layout/fragment_search_detail" />
 </navigation>
