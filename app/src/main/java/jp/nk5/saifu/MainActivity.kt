@@ -3,6 +3,7 @@ package jp.nk5.saifu
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.room.Room
+import jp.nk5.saifu.domain.Account
 import jp.nk5.saifu.domain.repository.AccountRepository
 import jp.nk5.saifu.infra.AppDatabase
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         GlobalScope.launch(Dispatchers.IO) {
             val repository: AccountRepository = jp.nk5.saifu.infra.repository.AccountRepository(db)
-            val lists = repository.getAccounts()
+            var lists = repository.getAccounts()
             print(lists)
         }
     }

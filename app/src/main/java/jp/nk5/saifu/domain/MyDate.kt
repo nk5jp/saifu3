@@ -25,4 +25,8 @@ class MyDate {
         return year * 10000 + month * 100 + day
     }
 
+    fun getYm(): Int {
+        return year * 100 + month
+    }
+
 }
