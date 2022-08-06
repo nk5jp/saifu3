@@ -2,4 +2,11 @@
     <string name="app_name">Saifu</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="btn_buy">購入</string>
+    <string name="btn_transfer">振替</string>
+    <string name="btn_search">検索</string>
+    <string name="btn_stat">統計</string>
+    <string name="btn_account">開設</string>
+    <string name="btn_history">履歴</string>
+    <string name="hnt_money">金額</string>
 </resources>

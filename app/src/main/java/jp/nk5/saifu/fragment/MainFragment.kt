@@ -15,26 +15,29 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
     private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
-        binding.button.setOnClickListener {
+        //ボタンクリック時の遷移処理を付加する
+        binding.button1.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_receiptFragment)
+        }
+        binding.button2.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_transferFragment)
+        }
+        binding.button3.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_searchFragment)
         }
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         // TODO: Use the ViewModel
     }
 
