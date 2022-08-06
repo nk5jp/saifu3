@@ -9,4 +9,7 @@
     <string name="btn_account">開設</string>
     <string name="btn_history">履歴</string>
     <string name="hnt_money">金額</string>
+    <string name="hnt_account">口座名</string>
+    <string name="lbl_money">999,999,999円</string>
+    <string name="lbl_account">何かしらの口座</string>
 </resources>
