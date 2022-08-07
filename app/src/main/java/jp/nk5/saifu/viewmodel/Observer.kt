@@ -1,5 +1,5 @@
 package jp.nk5.saifu.viewmodel
 
 interface Observer {
-    fun updateView(updateType: List<UpdateType>)
+    fun updateView(updateTypes: List<UpdateType>)
 }

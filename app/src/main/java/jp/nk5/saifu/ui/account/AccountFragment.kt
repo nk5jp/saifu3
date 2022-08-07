@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import jp.nk5.saifu.Common
+import jp.nk5.saifu.MyFragment
 import jp.nk5.saifu.databinding.FragmentAccountBinding
 import jp.nk5.saifu.service.AccountService
 import jp.nk5.saifu.ui.util.AccountListAdapter
@@ -17,39 +18,57 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AccountFragment : Fragment(), View.OnClickListener, Observer, AccountListAdapter.OnItemClickListener {
+class AccountFragment
+    : MyFragment(), View.OnClickListener, Observer, AccountListAdapter.OnItemClickListener
+{
 
-    private var _binding: FragmentAccountBinding? = null //レイアウト情報
-    private val binding get() = _binding!!
-    private val common by lazy {context?.applicationContext as Common}
+    /**
+     * 処理で使用するパラメータ群
+     */
     private val viewModel by lazy { common.accountViewModel } //ビューモデル
     private val service by lazy { AccountService(common.accountRepository, viewModel) } //サービス
     private val editText by lazy { binding.editText1 } //名称入力用のeditText
     private val recyclerView by lazy { binding.recyclerView1 } //口座リストのrecyclerView
 
+    /**
+     * viewModelの監視対象にこのフラグメントを追加する
+     * lazyによりviewModelの初期化も行われる
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.addObserver(this)
     }
 
+    /**
+     * bindingおよびview情報を初期化
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAccountBinding.inflate(inflater, container, false)
+        nullableBinding = FragmentAccountBinding.inflate(inflater, container, false)
         binding.button1.setOnClickListener(this)
-
-        recyclerView.adapter = AccountListAdapter(viewModel.accounts, this)
+        recyclerView.adapter = AccountListAdapter(
+            viewModel.accounts,
+            this,
+            viewModel.selectedPosition
+        )
         recyclerView.layoutManager = LinearLayoutManager(activity)
         return binding.root
     }
 
+    /**
+     * 画面の更新処理、各viewModelから通知される
+     */
     override fun updateView(updateTypes: List<UpdateType>) {
         for(updateType in updateTypes) {
             print(updateType)
         }
     }
 
+    /**
+     * ボタンを押下したときの処理
+     */
     override fun onClick(view: View) {
         try {
             val name = editText.text.toString()
@@ -63,13 +82,18 @@ class AccountFragment : Fragment(), View.OnClickListener, Observer, AccountListA
         }
     }
 
+    /**
+     * recyclerViewの各行を選択したときの処理
+     */
+    override fun onItemClick(view: View) {
+        alert(view.toString())
+    }
+
+    /**
+     * recyclerViewの各行を長押ししたときの処理
+     */
     override fun onItemLongClick(view: View): Boolean {
-        TODO("Not yet implemented")
+        alert(view.toString())
+        return true
     }
-
-    private fun alert(string: String)
-    {
-        Toast.makeText(activity, string, Toast.LENGTH_SHORT).show()
-    }
-
 }

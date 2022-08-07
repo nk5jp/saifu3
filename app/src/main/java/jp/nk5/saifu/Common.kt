@@ -13,7 +13,7 @@ import jp.nk5.saifu.viewmodel.AccountViewModel
  */
 class Common: Application() {
 
-    val db: AppDatabase by lazy {
+    private val db: AppDatabase by lazy {
         Room.databaseBuilder(
             this,
             AppDatabase::class.java, "saifu3-db"
@@ -21,6 +21,7 @@ class Common: Application() {
     }
 
     val accountRepository by lazy { AccountRepository(db) }
+    //MainActivityのonCreateで初期化
     var nullableAccountViewModel: AccountViewModel? = null
     val accountViewModel get() = nullableAccountViewModel!!
 
