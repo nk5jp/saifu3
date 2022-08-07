@@ -60,7 +60,7 @@
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
-        android:name="jp.nk5.saifu.fragment.AccountFragment"
+        android:name="jp.nk5.saifu.ui.account.AccountFragment"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account" />
     <fragment
