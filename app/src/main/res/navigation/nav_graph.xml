@@ -12,12 +12,18 @@
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_transferFragment"
+            app:enterAnim="@anim/slide_from_bottom"
+            app:exitAnim="@anim/slide_to_top"
             app:destination="@id/transferFragment" />
         <action
             android:id="@+id/action_mainFragment_to_receiptFragment"
+            app:enterAnim="@anim/slide_from_right"
+            app:exitAnim="@anim/slide_to_left"
             app:destination="@id/receiptFragment" />
         <action
             android:id="@+id/action_mainFragment_to_searchFragment"
+            app:enterAnim="@anim/slide_from_right"
+            app:exitAnim="@anim/slide_to_left"
             app:destination="@id/searchFragment" />
     </fragment>
     <fragment
@@ -27,7 +33,14 @@
         tools:layout="@layout/fragment_transfer" >
         <action
             android:id="@+id/action_transferFragment_to_accountFragment"
+            app:enterAnim="@anim/slide_from_bottom"
+            app:exitAnim="@anim/slide_to_top"
             app:destination="@id/accountFragment" />
+        <action
+            android:id="@+id/action_transferFragment_to_transferHistoryFragment"
+            app:enterAnim="@anim/slide_from_bottom"
+            app:exitAnim="@anim/slide_to_top"
+            app:destination="@id/transferHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/receiptFragment"
@@ -41,11 +54,13 @@
         tools:layout="@layout/fragment_search" >
         <action
             android:id="@+id/action_searchFragment_to_searchDetailFragment"
+            app:enterAnim="@anim/slide_from_right"
+            app:exitAnim="@anim/slide_to_left"
             app:destination="@id/searchDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
-        android:name="jp.nk5.saifu.fragment.AccountFragment"
+        android:name="jp.nk5.saifu.ui.account.AccountFragment"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account" />
     <fragment
@@ -53,4 +68,9 @@
         android:name="jp.nk5.saifu.fragment.SearchDetailFragment"
         android:label="fragment_search_detail"
         tools:layout="@layout/fragment_search_detail" />
+    <fragment
+        android:id="@+id/transferHistoryFragment"
+        android:name="jp.nk5.saifu.fragment.TransferHistoryFragment"
+        android:label="fragment_transfer_history"
+        tools:layout="@layout/fragment_transfer_history" />
 </navigation>

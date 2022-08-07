@@ -3,8 +3,11 @@ package jp.nk5.saifu.infra.repository
 import jp.nk5.saifu.domain.Account
 import jp.nk5.saifu.infra.AppDatabase
 import jp.nk5.saifu.infra.entity.EntityAccount
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class AccountRepository (private val db: AppDatabase) : jp.nk5.saifu.domain.repository.AccountRepository {
+class AccountRepository (private val db: AppDatabase)
+    : jp.nk5.saifu.domain.repository.AccountRepository {
 
     /**
      * 最初に呼び出されたタイミングでDBから全情報を取得。以後は差分処理を行う
@@ -22,8 +25,13 @@ class AccountRepository (private val db: AppDatabase) : jp.nk5.saifu.domain.repo
 
     /**
      * 既存の口座を作成もしくは更新する処理
+     * CreateかUpdateかは、idが0か否かで判定する（Roomの仕様にも基づく）
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      */
-    override fun setAccount(account: Account) {
+    override suspend fun setAccount(account: Account):Unit = withContext(Dispatchers.IO) {
+        /**
+         * 新規の場合
+         */
         if (account.id == 0) {
             val id = db.accountDao().insertAccount(
                 EntityAccount(
@@ -49,9 +57,10 @@ class AccountRepository (private val db: AppDatabase) : jp.nk5.saifu.domain.repo
 
     /**
      * Mapperからドメイン要素を抽出したリストを作成して返却する
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      */
-    override fun getAccounts(): List<Account> {
-        return lists
+    override suspend fun getAccounts(): MutableList<Account> = withContext(Dispatchers.IO) {
+        lists
     }
 
     /**
