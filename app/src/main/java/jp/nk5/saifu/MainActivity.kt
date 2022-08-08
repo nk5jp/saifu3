@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val common = applicationContext as Common
             common.nullableAccountViewModel = AccountViewModel(
-                common.accountRepository.getAccounts()
+                common.accountRepository.getValidAccounts()
             )
         }
     }
