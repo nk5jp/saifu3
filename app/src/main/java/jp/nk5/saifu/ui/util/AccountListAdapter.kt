@@ -40,7 +40,7 @@ class AccountListAdapter(
      */
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.textView1.text = dataSet[position].name
-        viewHolder.textView2.text = dataSet[position].amount.toString()
+        viewHolder.textView2.text = "%,d".format(dataSet[position].amount)
         if (position in selectedPosition) {
             viewHolder.textView1.setBackgroundColor(Color.YELLOW)
             viewHolder.textView2.setBackgroundColor(Color.YELLOW)

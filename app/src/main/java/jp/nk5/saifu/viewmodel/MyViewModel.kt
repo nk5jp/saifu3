@@ -7,7 +7,7 @@ open class MyViewModel {
         observers.add(observer)
     }
 
-    fun notifyObservers(updateTypes: List<UpdateType>) {
+    suspend fun notifyObservers(updateTypes: List<UpdateType>) {
         for(observer in observers) {
             observer.updateView(updateTypes)
         }

@@ -1,5 +1,6 @@
 package jp.nk5.saifu.ui.account
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,11 +13,14 @@ import jp.nk5.saifu.MyFragment
 import jp.nk5.saifu.databinding.FragmentAccountBinding
 import jp.nk5.saifu.service.AccountService
 import jp.nk5.saifu.ui.util.AccountListAdapter
+import jp.nk5.saifu.viewmodel.AccountUpdateType
+import jp.nk5.saifu.viewmodel.AccountViewModel
 import jp.nk5.saifu.viewmodel.Observer
 import jp.nk5.saifu.viewmodel.UpdateType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AccountFragment
     : MyFragment(), View.OnClickListener, Observer, AccountListAdapter.OnItemClickListener
@@ -51,7 +55,7 @@ class AccountFragment
         recyclerView.adapter = AccountListAdapter(
             viewModel.accounts,
             this,
-            viewModel.selectedPosition
+            viewModel.selectedPositions
         )
         recyclerView.layoutManager = LinearLayoutManager(activity)
         return binding.root
@@ -60,9 +64,21 @@ class AccountFragment
     /**
      * 画面の更新処理、各viewModelから通知される
      */
-    override fun updateView(updateTypes: List<UpdateType>) {
-        for(updateType in updateTypes) {
-            print(updateType)
+    @SuppressLint("NotifyDataSetChanged")
+    override suspend fun updateView(updateTypes: List<UpdateType>) {
+        withContext(Dispatchers.Main) {
+            for(updateType in updateTypes) {
+                when(updateType) {
+                    //RecyclerViewに更新を通知する
+                    AccountUpdateType.LIST_UPDATE -> {
+                        recyclerView.adapter!!.notifyDataSetChanged()
+                    }
+                    //editTextを空にする
+                    AccountUpdateType.EDIT_CLEAR -> {
+                        editText.setText("")
+                    }
+                }
+            }
         }
     }
 

@@ -14,6 +14,7 @@ class AccountService(
      */
     suspend fun createAccount(name: String) {
         repository.setAccount(Account(name))
+        viewModel.updateList(repository.getValidAccounts())
     }
 
 }
