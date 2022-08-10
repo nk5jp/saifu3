@@ -19,7 +19,8 @@ class AccountViewModel(
         }
         val types = listOf(
             AccountUpdateType.LIST_UPDATE,
-            AccountUpdateType.EDIT_CLEAR
+            AccountUpdateType.EDIT_CLEAR,
+            AccountUpdateType.BUTTON_AS_CREATE
         )
         notifyObservers(types)
     }
