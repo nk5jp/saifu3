@@ -2,19 +2,16 @@ package jp.nk5.saifu.ui.account
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import jp.nk5.saifu.Common
 import jp.nk5.saifu.MyFragment
 import jp.nk5.saifu.databinding.FragmentAccountBinding
 import jp.nk5.saifu.service.AccountService
 import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.viewmodel.AccountUpdateType
-import jp.nk5.saifu.viewmodel.AccountViewModel
 import jp.nk5.saifu.viewmodel.Observer
 import jp.nk5.saifu.viewmodel.UpdateType
 import kotlinx.coroutines.CoroutineScope
@@ -109,7 +106,23 @@ class AccountFragment
      * recyclerViewの各行を長押ししたときの処理
      */
     override fun onItemLongClick(view: View): Boolean {
-        alert(view.toString())
+        AlertDialog.Builder(requireContext())
+            .setTitle("口座を削除しますか？")
+            .setMessage("削除後は元に戻せません")
+            .setPositiveButton("YES") { _, _ ->
+                //対象口座を削除する
+                try {
+                    val position = recyclerView.getChildAdapterPosition(view)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        service.deleteAccount(position)
+                    }
+                } catch (e: Exception) {
+                    alert(e.toString())
+                }
+            }
+            .setNegativeButton("NO") { _, _ ->
+                //何も実行しない
+            }.show()
         return true
     }
 }
