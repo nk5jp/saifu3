@@ -5,14 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import jp.nk5.saifu.MyFragment
 import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentAccountBinding
+import jp.nk5.saifu.domain.Account
 import jp.nk5.saifu.service.AccountService
 import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.viewmodel.AccountUpdateType
+import jp.nk5.saifu.viewmodel.AccountViewModel
 import jp.nk5.saifu.viewmodel.Observer
 import jp.nk5.saifu.viewmodel.UpdateType
 import kotlinx.coroutines.CoroutineScope
@@ -27,11 +32,16 @@ class AccountFragment
     /**
      * 処理で使用するパラメータ群
      */
-    private val viewModel by lazy { common.accountViewModel } //ビューモデル
+    private var _binding: FragmentAccountBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel by lazy { AccountViewModel() }
     private val service by lazy { AccountService(common.accountRepository, viewModel) } //サービス
-    private val editText by lazy { binding.editText1 } //名称入力用のeditText
-    private val recyclerView by lazy { binding.recyclerView1 } //口座リストのrecyclerView
-    private val button by lazy { binding. button1 }
+    private var _editText: EditText? = null
+    private val editText get() = _editText!!
+    private var _recyclerView: RecyclerView? = null
+    private val recyclerView get() = _recyclerView!!
+    private var _button: Button? = null
+    private val button get() = _button!!
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -49,7 +59,10 @@ class AccountFragment
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        nullableBinding = FragmentAccountBinding.inflate(inflater, container, false)
+        _binding = FragmentAccountBinding.inflate(inflater, container, false)
+        _editText = binding.editText1
+        _recyclerView = binding.recyclerView1
+        _button = binding.button1
         button.setOnClickListener(this)
         recyclerView.adapter = AccountListAdapter(
             viewModel.accounts,
@@ -59,6 +72,14 @@ class AccountFragment
         recyclerView.layoutManager = LinearLayoutManager(activity)
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        CoroutineScope(Dispatchers.Main).launch {
+            service.initializeView()
+        }
+    }
+
 
     /**
      * 画面の更新処理、各viewModelから通知される
@@ -122,12 +143,12 @@ class AccountFragment
         try {
             val newPosition = recyclerView.getChildAdapterPosition(view)
             if (viewModel.isSelected() && viewModel.getSelectingPosition() == newPosition) {
-                //元々選択していた行を再選択した場合：選択解除処理
+                //選択済みの行を再選択した場合：選択解除処理
                 CoroutineScope(Dispatchers.Main).launch {
                     service.unselectAccount(newPosition)
                 }
             } else {
-                //それ以外の場合：新たな選択処理
+                //それ以外の場合：選択処理
                 CoroutineScope(Dispatchers.Main).launch {
                     service.selectAccount(newPosition)
                 }

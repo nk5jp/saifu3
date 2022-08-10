@@ -1,4 +1,4 @@
-package jp.nk5.saifu.fragment
+package jp.nk5.saifu.ui.transfer
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

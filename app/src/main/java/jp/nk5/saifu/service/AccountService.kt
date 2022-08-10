@@ -9,6 +9,10 @@ class AccountService(
     private val viewModel: AccountViewModel
 ) {
 
+    suspend fun initializeView() {
+        viewModel.updateList(repository.getValidAccounts())
+    }
+
     /**
      * 新たな口座を開設し、ビューモデルに反映する。
      */
