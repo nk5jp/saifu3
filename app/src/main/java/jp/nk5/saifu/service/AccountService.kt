@@ -10,10 +10,20 @@ class AccountService(
 ) {
 
     /**
-     * 新たなアカウントを開設し、ビューモデルに反映する。
+     * 新たな口座を開設し、ビューモデルに反映する。
      */
     suspend fun createAccount(name: String) {
         repository.setAccount(Account(name))
+        viewModel.updateList(repository.getValidAccounts())
+    }
+
+    /**
+     * 指定した口座を論理削除し、ビューモデルに反映する。
+     */
+    suspend fun deleteAccount(position: Int) {
+        val account = viewModel.accounts[position]
+        account.isValid = false
+        repository.setAccount(account)
         viewModel.updateList(repository.getValidAccounts())
     }
 
