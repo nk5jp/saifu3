@@ -24,7 +24,7 @@ class TransferFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.button2.setOnClickListener{
+        binding.button3.setOnClickListener{
             findNavController().navigate(R.id.action_transferFragment_to_accountFragment)
         }
     }

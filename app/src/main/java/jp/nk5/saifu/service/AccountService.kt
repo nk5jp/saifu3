@@ -50,12 +50,4 @@ class AccountService(
     suspend fun unselectAccount(position: Int) {
         viewModel.unselectListItem(position)
     }
-
-    /**
-     * 別の口座を選択し、ビューモデルに反映する。
-     */
-    suspend fun changeAccount(position: Int) {
-        viewModel.changeListItem(position)
-    }
-
 }

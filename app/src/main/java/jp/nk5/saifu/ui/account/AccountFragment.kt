@@ -121,20 +121,13 @@ class AccountFragment
     override fun onItemClick(view: View) {
         try {
             val newPosition = recyclerView.getChildAdapterPosition(view)
-            if (viewModel.isSelected()) {
-                if (viewModel.getSelectingPosition() == newPosition) {
-                    //元々選択していた行を再選択した場合：選択解除処理
-                    CoroutineScope(Dispatchers.Main).launch {
-                        service.unselectAccount(newPosition)
-                    }
-                } else {
-                    //別の行を再選択した場合：選択変更処理
-                    CoroutineScope(Dispatchers.Main).launch {
-                        service.changeAccount(newPosition)
-                    }
+            if (viewModel.isSelected() && viewModel.getSelectingPosition() == newPosition) {
+                //元々選択していた行を再選択した場合：選択解除処理
+                CoroutineScope(Dispatchers.Main).launch {
+                    service.unselectAccount(newPosition)
                 }
             } else {
-                //何も選択していない場合：新たな選択処理
+                //それ以外の場合：新たな選択処理
                 CoroutineScope(Dispatchers.Main).launch {
                     service.selectAccount(newPosition)
                 }

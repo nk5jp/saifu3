@@ -30,6 +30,7 @@ class AccountViewModel(
      * 単一選択画面ではあるが、本リストビューを流用する都合上、リストで管理している
      */
     suspend fun selectListItem(position: Int) {
+        selectedPositions.clear()
         selectedPositions.add(position)
         val types = listOf(
             AccountUpdateType.LIST_UPDATE,
@@ -49,20 +50,6 @@ class AccountViewModel(
             AccountUpdateType.LIST_UPDATE,
             AccountUpdateType.EDIT_CLEAR,
             AccountUpdateType.BUTTON_AS_CREATE
-        )
-        notifyObservers(types)
-    }
-
-    /**
-     * 選択を変更し、リストの再描画およびUIの表示を修正する
-     * 単一選択画面ではあるが、本リストビューを流用する都合上、リストで管理している
-     */
-    suspend fun changeListItem(position: Int) {
-        selectedPositions.clear()
-        selectedPositions.add(position)
-        val types = listOf(
-            AccountUpdateType.LIST_UPDATE,
-            AccountUpdateType.EDIT_INPUT
         )
         notifyObservers(types)
     }
