@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import jp.nk5.saifu.MyFragment
+import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentAccountBinding
 import jp.nk5.saifu.service.AccountService
 import jp.nk5.saifu.ui.util.AccountListAdapter
@@ -30,6 +31,7 @@ class AccountFragment
     private val service by lazy { AccountService(common.accountRepository, viewModel) } //サービス
     private val editText by lazy { binding.editText1 } //名称入力用のeditText
     private val recyclerView by lazy { binding.recyclerView1 } //口座リストのrecyclerView
+    private val button by lazy { binding. button1 }
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -48,7 +50,7 @@ class AccountFragment
         savedInstanceState: Bundle?
     ): View {
         nullableBinding = FragmentAccountBinding.inflate(inflater, container, false)
-        binding.button1.setOnClickListener(this)
+        button.setOnClickListener(this)
         recyclerView.adapter = AccountListAdapter(
             viewModel.accounts,
             this,
@@ -74,6 +76,18 @@ class AccountFragment
                     AccountUpdateType.EDIT_CLEAR -> {
                         editText.setText("")
                     }
+                    //editTextに選択している口座名を入力する
+                    AccountUpdateType.EDIT_INPUT -> {
+                        editText.setText(viewModel.getSelectedAccount().name)
+                    }
+                    //buttonの文字列を「開設」にする
+                    AccountUpdateType.BUTTON_AS_CREATE -> {
+                        button.setText(R.string.btn_account)
+                    }
+                    //buttonの文字列を「変更」にする
+                    AccountUpdateType.BUTTON_AS_UPDATE -> {
+                        button.setText(R.string.btn_update)
+                    }
                 }
             }
         }
@@ -88,7 +102,13 @@ class AccountFragment
             //エラーチェック：空白は受け付けない
             if (name == "") { alert("口座名が未入力です"); return }
             CoroutineScope(Dispatchers.Main).launch {
-                service.createAccount(name)
+                if (viewModel.isSelected()) {
+                    //選択している場合：更新処理
+                    service.updateAccount(viewModel.getSelectingPosition(), name)
+                } else {
+                    //選択していない場合：開設処理
+                    service.createAccount(name)
+                }
             }
         } catch (e: Exception) {
             alert(e.toString())
@@ -99,20 +119,42 @@ class AccountFragment
      * recyclerViewの各行を選択したときの処理
      */
     override fun onItemClick(view: View) {
-        alert(view.toString())
+        try {
+            val newPosition = recyclerView.getChildAdapterPosition(view)
+            if (viewModel.isSelected()) {
+                if (viewModel.getSelectingPosition() == newPosition) {
+                    //元々選択していた行を再選択した場合：選択解除処理
+                    CoroutineScope(Dispatchers.Main).launch {
+                        service.unselectAccount(newPosition)
+                    }
+                } else {
+                    //別の行を再選択した場合：選択変更処理
+                    CoroutineScope(Dispatchers.Main).launch {
+                        service.changeAccount(newPosition)
+                    }
+                }
+            } else {
+                //何も選択していない場合：新たな選択処理
+                CoroutineScope(Dispatchers.Main).launch {
+                    service.selectAccount(newPosition)
+                }
+            }
+        } catch (e: Exception) {
+            alert(e.toString())
+        }
     }
 
     /**
      * recyclerViewの各行を長押ししたときの処理
      */
     override fun onItemLongClick(view: View): Boolean {
+        val position = recyclerView.getChildAdapterPosition(view)
         AlertDialog.Builder(requireContext())
-            .setTitle("口座を削除しますか？")
+            .setTitle("%sを削除しますか？".format(viewModel.getAccountByPosition(position).name))
             .setMessage("削除後は元に戻せません")
             .setPositiveButton("YES") { _, _ ->
                 //対象口座を削除する
                 try {
-                    val position = recyclerView.getChildAdapterPosition(view)
                     CoroutineScope(Dispatchers.Main).launch {
                         service.deleteAccount(position)
                     }
