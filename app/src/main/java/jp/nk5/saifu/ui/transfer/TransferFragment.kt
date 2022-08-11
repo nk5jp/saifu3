@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TransferFragment
-    : MyFragment(), Observer, AccountListAdapter.OnItemClickListener {
+    : MyFragment(), View.OnClickListener, Observer, AccountListAdapter.OnItemClickListener {
 
 
     /**
@@ -56,6 +56,7 @@ class TransferFragment
         if (_binding == null) {
             //以下の一連の処理はインスタンスを初期生成したときのみ通過する
             _binding = FragmentTransferBinding.inflate(inflater, container, false)
+            binding.button1.setOnClickListener(this)
             //この時点ではviewModelの参照先メモリを共有しているだけで、その先のListは空
             recyclerView.adapter = AccountListAdapter(
                 viewModel.accounts,
@@ -63,6 +64,7 @@ class TransferFragment
                 viewModel.selectedPositions
             )
             recyclerView.layoutManager = LinearLayoutManager(activity)
+
             //画面遷移のイベントをボタンに設定する
             binding.button3.setOnClickListener{
                 findNavController().navigate(R.id.action_transferFragment_to_accountFragment)
@@ -79,7 +81,7 @@ class TransferFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Main).launch {
-            service.updateView()
+            service.initializeView()
         }
     }
 
@@ -122,6 +124,26 @@ class TransferFragment
     }
 
     /**
+     * 振替ボタンを押下したときの処理
+     * View.OnClickListenerで定義されている関数の実装
+     */
+    override fun onClick(view: View) {
+        try {
+            //エラーチェック：口座未選択の場合は何もしない
+            if (viewModel.isUnselected()) {alert("口座が選択されていません"); return }
+            val strAmount = editText.text.toString()
+            //エラーチェック：空白は受け付けない
+            if (strAmount == "") { alert("口座名が未入力です"); return }
+            val amount = strAmount.toInt()
+            CoroutineScope(Dispatchers.Main).launch {
+                service.transfer(amount)
+            }
+        } catch (e: Exception) {
+            alert(e.toString())
+        }
+    }
+
+    /**
      * 選択した行番号を踏まえ、recyclerView上の選択／非選択のモードを更新する
      * AccountListAdapter.OnItemClickListenerで定義されている関数の実装
      */
@@ -136,7 +158,11 @@ class TransferFragment
         }
     }
 
+    /**
+     * 何もしないが、アダプター共通化の都合上、空の処理を実装している
+     * AccountListAdapter.OnItemClickListenerで定義されている関数の実装
+     */
     override fun onItemLongClick(view: View): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 }

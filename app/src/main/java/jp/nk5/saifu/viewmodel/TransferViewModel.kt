@@ -102,4 +102,16 @@ class TransferViewModel: MyViewModel() {
         return accounts[selectedPositions[1]]
     }
 
+    fun isUnselected(): Boolean {
+        return selectedPositions.size == 0
+    }
+
+    fun isPayment(): Boolean {
+        return selectedPositions.size == 1
+    }
+
+    fun isTransfer(): Boolean {
+        return selectedPositions.size == 2
+    }
+
 }
