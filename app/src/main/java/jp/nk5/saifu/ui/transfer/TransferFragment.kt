@@ -69,6 +69,9 @@ class TransferFragment
             recyclerView.layoutManager = LinearLayoutManager(activity)
 
             //画面遷移のイベントをボタンに設定する
+            binding.button2.setOnClickListener{
+                findNavController().navigate(R.id.action_transferFragment_to_transferHistoryFragment)
+            }
             binding.button3.setOnClickListener{
                 findNavController().navigate(R.id.action_transferFragment_to_accountFragment)
             }
