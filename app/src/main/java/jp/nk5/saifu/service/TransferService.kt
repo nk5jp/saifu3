@@ -27,7 +27,8 @@ class TransferService(
     }
 
     /**
-     *
+     * viewModel上の口座選択状況および入力した金額を踏まえて、振替処理を実施する。
+     * 口座未選択の状態はFragment側でエラー処理しているため、本処理では考慮しない。
      */
     suspend fun transfer(amount: Int) {
         when {
@@ -70,6 +71,13 @@ class TransferService(
                 throw Exception("viewModel内で口座が3つ以上選択されています")
             }
         }
+    }
+
+    /**
+     * リスト上の口座の合計金額を返却する
+     */
+    fun sumAmounts(): Int {
+        return viewModel.accounts.sumOf{ a -> a.amount }
     }
 
 }

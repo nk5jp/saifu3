@@ -33,7 +33,8 @@ class TransferFragment
     }
     private val recyclerView by lazy { binding.recyclerView1 } //口座一覧のrecyclerView
     private val editText by lazy { binding.editText1 } //金額入力用のeditText
-    private val textView by lazy { binding.textView1 } //選択状態説明用のtextView
+    private val textView1 by lazy { binding.textView1 } //選択状態説明用のtextView
+    private val textView2 by lazy { binding.textView2 } //合計金額表示用のtextView
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -105,19 +106,24 @@ class TransferFragment
                     }
                     //textView1の文字列を「未選択」にする
                     TransferUpdateType.TEXTVIEW_AS_UNSELECTED -> {
-                        textView.setText(R.string.lbl_unselected)
+                        textView1.setText(R.string.lbl_unselected)
                     }
                     //textView1の文字列を「XXXに入金」にする
                     TransferUpdateType.TEXTVIEW_AS_PAYMENT -> {
-                        textView.text = "%sに入金".format(
+                        textView1.text = "%sに入金".format(
                             viewModel.getDebitAccount().name
                         )
                     }
                     //textView1の文字列を「XXXからYYYに振替」にする
                     TransferUpdateType.TEXTVIEW_AS_TRANSFER -> {
-                        textView.text = "%sから%sに振替".format(
+                        textView1.text = "%sから%sに振替".format(
                             viewModel.getCreditAccount().name,
                             viewModel.getDebitAccount().name
+                        )
+                    }
+                    TransferUpdateType.TEXTVIEW_AS_SUM -> {
+                        textView2.text = "総額：%,d円".format(
+                            service.sumAmounts()
                         )
                     }
                 }

@@ -18,7 +18,8 @@ class TransferViewModel: MyViewModel() {
         }
         val types = listOf(
             TransferUpdateType.LIST_UPDATE,
-            TransferUpdateType.TEXTVIEW_AS_UNSELECTED
+            TransferUpdateType.TEXTVIEW_AS_UNSELECTED,
+            TransferUpdateType.TEXTVIEW_AS_SUM
         )
         notifyObservers(types)
     }
@@ -31,7 +32,8 @@ class TransferViewModel: MyViewModel() {
         selectedPositions.clear()
         val types = listOf(
             TransferUpdateType.LIST_UPDATE,
-            TransferUpdateType.TEXTVIEW_AS_UNSELECTED
+            TransferUpdateType.TEXTVIEW_AS_UNSELECTED,
+            TransferUpdateType.TEXTVIEW_AS_SUM
         )
         notifyObservers(types)
     }
@@ -102,14 +104,23 @@ class TransferViewModel: MyViewModel() {
         return accounts[selectedPositions[1]]
     }
 
+    /**
+     * 口座が未選択か否かを返却する（未選択がtrueである）
+     */
     fun isUnselected(): Boolean {
         return selectedPositions.size == 0
     }
 
+    /**
+     * 口座を1つ選択している（入金モードである）か否かを返却する
+     */
     fun isPayment(): Boolean {
         return selectedPositions.size == 1
     }
 
+    /**
+     * 口座を2つ選択している（振替モードである）か否かを返却する
+     */
     fun isTransfer(): Boolean {
         return selectedPositions.size == 2
     }
