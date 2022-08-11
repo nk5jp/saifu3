@@ -2,9 +2,8 @@ package jp.nk5.saifu.viewmodel
 
 import jp.nk5.saifu.domain.Account
 
-class AccountViewModel(
-    val accounts: MutableList<Account>,
-): MyViewModel() {
+class AccountViewModel: MyViewModel() {
+    val accounts = mutableListOf<Account>()
     val selectedPositions = mutableListOf<Int>()
 
     /**
@@ -19,33 +18,6 @@ class AccountViewModel(
         }
         val types = listOf(
             AccountUpdateType.LIST_UPDATE,
-            AccountUpdateType.EDIT_CLEAR
-        )
-        notifyObservers(types)
-    }
-
-    /**
-     * 選択行を記憶しておき、リストの再描画およびUIの表示を修正する
-     * 単一選択画面ではあるが、本リストビューを流用する都合上、リストで管理している
-     */
-    suspend fun selectListItem(position: Int) {
-        selectedPositions.add(position)
-        val types = listOf(
-            AccountUpdateType.LIST_UPDATE,
-            AccountUpdateType.EDIT_INPUT,
-            AccountUpdateType.BUTTON_AS_UPDATE
-        )
-        notifyObservers(types)
-    }
-
-    /**
-     * 選択を解除し、リストの再描画およびUIの表示を修正する
-     * 単一選択画面ではあるが、本リストビューを流用する都合上、リストで管理している
-     */
-    suspend fun unselectListItem(position: Int) {
-        selectedPositions.remove(position)
-        val types = listOf(
-            AccountUpdateType.LIST_UPDATE,
             AccountUpdateType.EDIT_CLEAR,
             AccountUpdateType.BUTTON_AS_CREATE
         )
@@ -53,16 +25,33 @@ class AccountViewModel(
     }
 
     /**
-     * 選択を変更し、リストの再描画およびUIの表示を修正する
-     * 単一選択画面ではあるが、本リストビューを流用する都合上、リストで管理している
+     * viewModelの情報および新たに選択された行番号を踏まえ、リストの再描画およびUIの表示を修正する
+     * この画面は単一選択画面ではあるが、アダプターを流用する都合上、リストで管理している
      */
-    suspend fun changeListItem(position: Int) {
-        selectedPositions.clear()
-        selectedPositions.add(position)
-        val types = listOf(
-            AccountUpdateType.LIST_UPDATE,
-            AccountUpdateType.EDIT_INPUT
-        )
+    suspend fun selectListItem(newPosition: Int) {
+        if (isSelected() && selectedPositions[0] == newPosition) {
+            //既に選択されている行を再選択した場合：選択を解除する
+            selectedPositions.clear()
+        } else {
+            //それ以外の場合：選択行を更新する
+            selectedPositions.clear()
+            selectedPositions.add(newPosition)
+        }
+        val types: List<AccountUpdateType> = if (isSelected()) {
+            //行が選択されている場合の画面更新命令群
+            listOf(
+                AccountUpdateType.LIST_UPDATE,
+                AccountUpdateType.EDIT_INPUT,
+                AccountUpdateType.BUTTON_AS_UPDATE
+            )
+        } else {
+            //行が選択されていない場合の画面更新命令群
+            listOf(
+                AccountUpdateType.LIST_UPDATE,
+                AccountUpdateType.EDIT_CLEAR,
+                AccountUpdateType.BUTTON_AS_CREATE
+            )
+        }
         notifyObservers(types)
     }
 
@@ -71,13 +60,6 @@ class AccountViewModel(
      */
     fun getAccountByPosition(position: Int): Account {
         return accounts[position]
-    }
-
-    /**
-     * 現在選択している口座位置を返却する
-     */
-    fun getSelectingPosition(): Int {
-        return selectedPositions[0]
     }
 
     /**
@@ -90,7 +72,7 @@ class AccountViewModel(
     /**
      * 選択している口座を返却する
      */
-    fun getSelectedAccount(): Account {
+    fun getSelectingAccount(): Account {
         return accounts[selectedPositions[0]]
     }
 

@@ -13,4 +13,5 @@
     <string name="hnt_account">口座名</string>
     <string name="lbl_money">999,999,999円</string>
     <string name="lbl_account">何かしらの口座</string>
+    <string name="lbl_unselected">未選択</string>
 </resources>

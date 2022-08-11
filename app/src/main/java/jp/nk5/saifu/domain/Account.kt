@@ -6,6 +6,6 @@ package jp.nk5.saifu.domain
  * isValidは論理削除用のフラグ。これがonの場合、リストアップ対象から永続的に除外される。
  */
 class Account(var id: Int, var name: String, var amount: Int, var isValid: Boolean) {
-    // 初期実装の場合は名前以外のパラメータが自明であるため、そちら用のコンストラクタも用意しておく
+    // 新規開設の場合は名前以外のパラメータが自明であるため、そちら用のコンストラクタも用意しておく
     constructor(name: String) : this(0, name, 0, true)
 }

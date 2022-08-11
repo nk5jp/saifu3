@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/transferFragment"
-        android:name="jp.nk5.saifu.fragment.TransferFragment"
+        android:name="jp.nk5.saifu.ui.transfer.TransferFragment"
         android:label="fragment_transfer"
         tools:layout="@layout/fragment_transfer" >
         <action
@@ -70,7 +70,7 @@
         tools:layout="@layout/fragment_search_detail" />
     <fragment
         android:id="@+id/transferHistoryFragment"
-        android:name="jp.nk5.saifu.fragment.TransferHistoryFragment"
+        android:name="jp.nk5.saifu.ui.transfer.TransferHistoryFragment"
         android:label="fragment_transfer_history"
         tools:layout="@layout/fragment_transfer_history" />
 </navigation>

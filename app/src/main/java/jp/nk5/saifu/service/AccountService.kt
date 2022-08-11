@@ -10,52 +10,44 @@ class AccountService(
 ) {
 
     /**
-     * 新たな口座を開設し、ビューモデルに反映する。
+     * viewModelに最新の有効口座を共有し、画面を再描画する（後者の発火はviewModelの責務）
      */
-    suspend fun createAccount(name: String) {
-        repository.setAccount(Account(name))
+    suspend fun updateView() {
         viewModel.updateList(repository.getValidAccounts())
     }
 
     /**
-     * 指定した口座を論理削除し、ビューモデルに反映する。
+     * 指定した口座を論理削除し、updateViewをキックする
      */
     suspend fun deleteAccount(position: Int) {
         val account = viewModel.getAccountByPosition(position)
         account.isValid = false
         repository.setAccount(account)
-        viewModel.updateList(repository.getValidAccounts())
+        updateView()
     }
 
     /**
-     * 指定した口座名を更新し、ビューモデルに反映する。
+     * viewModelの情報および入力口座名を踏まえて口座一覧を更新し、updateViewをキックする
      */
-    suspend fun updateAccount(position: Int, name: String) {
-        val account = viewModel.getAccountByPosition(position)
-        account.name = name
+    suspend fun updateAccount(name: String) {
+        val account: Account = if (viewModel.isSelected()) {
+            //行が選択されている場合：その行の口座のインスタンスを名称だけ変更して返却する
+            val selectingAccount = viewModel.getSelectingAccount()
+            selectingAccount.name = name
+            selectingAccount
+        } else {
+            //行が選択されていない場合：新たに口座を開設して返却する
+            Account(name)
+        }
         repository.setAccount(account)
-        viewModel.updateList(repository.getValidAccounts())
+        updateView()
     }
 
     /**
      * 口座を選択し、ビューモデルに反映する。
      */
-    suspend fun selectAccount(position: Int) {
-        viewModel.selectListItem(position)
-    }
-
-    /**
-     * 口座の選択を解除し、ビューモデルに反映する。
-     */
-    suspend fun unselectAccount(position: Int) {
-        viewModel.unselectListItem(position)
-    }
-
-    /**
-     * 別の口座を選択し、ビューモデルに反映する。
-     */
-    suspend fun changeAccount(position: Int) {
-        viewModel.changeListItem(position)
+    suspend fun selectAccount(newPosition: Int) {
+        viewModel.selectListItem(newPosition)
     }
 
 }
