@@ -26,7 +26,7 @@ enum class Title(val id: Int, val text: String) {
                 6 -> EXP
                 7 -> TRAVEL
                 99 -> MISC
-                else -> throw Exception("存在しない税種別IDです")
+                else -> throw Exception("存在しない費用科目IDです")
             }
         }
     }
