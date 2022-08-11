@@ -13,5 +13,22 @@ enum class Title(val id: Int, val text: String) {
     UTIL(5, "光熱費"),
     EXP(6,"経費"),
     TRAVEL(7, "旅費"),
-    MISC(99, "雑費")
+    MISC(99, "雑費");
+
+    companion object {
+        fun getTitleById(id: Int): Title {
+            return when(id) {
+                1 -> FOOD
+                2 -> EQUIP
+                3 -> SELF
+                4 -> ENTERTAINMENT
+                5 -> UTIL
+                6 -> EXP
+                7 -> TRAVEL
+                99 -> MISC
+                else -> throw Exception("存在しない税種別IDです")
+            }
+        }
+    }
+
 }
