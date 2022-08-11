@@ -39,13 +39,23 @@ class TransferRepository(
     override suspend fun getTransferByYearMonth(yearMonth: Int)
     : List<Transfer> = withContext(Dispatchers.IO) {
         db.transferDao().selectByYearMonth(yearMonth).map { e ->
-            Transfer(
-                e.id,
-                MyDate(e.date),
-                accountRepository.getAccountById(e.debitId),
-                accountRepository.getAccountById(e.debitId),
-                e.amount
-            )
+            if (e.creditId == null) {
+                Transfer(
+                    e.id,
+                    MyDate(e.date),
+                    accountRepository.getAccountById(e.debitId),
+                    null,
+                    e.amount
+                )
+            } else {
+                Transfer(
+                    e.id,
+                    MyDate(e.date),
+                    accountRepository.getAccountById(e.debitId),
+                    accountRepository.getAccountById(e.creditId),
+                    e.amount
+                )
+            }
         }.toMutableList()
     }
 }
