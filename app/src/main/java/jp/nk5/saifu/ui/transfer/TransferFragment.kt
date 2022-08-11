@@ -121,8 +121,9 @@ class TransferFragment
                             viewModel.getDebitAccount().name
                         )
                     }
+                    //textView2の文字列を「合計：XXX円」にする
                     TransferUpdateType.TEXTVIEW_AS_SUM -> {
-                        textView2.text = "総額：%,d円".format(
+                        textView2.text = "合計：%,d円".format(
                             service.sumAmounts()
                         )
                     }
