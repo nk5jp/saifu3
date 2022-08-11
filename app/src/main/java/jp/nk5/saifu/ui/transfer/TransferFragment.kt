@@ -27,12 +27,14 @@ class TransferFragment
      * 処理で使用するパラメータ群
      */
     private var _binding: FragmentTransferBinding? = null
-    private val binding get() = _binding!!
-    private val viewModel by lazy { TransferViewModel() }
-    private var _recyclerView: RecyclerView? = null
-    private val recyclerView get() = _recyclerView!!
+    private val binding get() = _binding!! //レイアウト情報
+    private val viewModel by lazy { TransferViewModel() } //本画面のviewModel
     private val service by lazy { TransferService(common.accountRepository, viewModel) }
+    private val recyclerView by lazy { binding.recyclerView1 } //口座一覧のrecyclerView
 
+    /**
+     * navControllerなどによる遷移でインスタンスが生成された初回のみに実行される処理
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.addObserver(this)
@@ -42,16 +44,18 @@ class TransferFragment
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTransferBinding.inflate(inflater, container, false)
-        _recyclerView = binding.recyclerView1
-        recyclerView.adapter = AccountListAdapter(
-            viewModel.accounts,
-            this,
-            viewModel.selectedPositions
-        )
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        binding.button3.setOnClickListener{
-            findNavController().navigate(R.id.action_transferFragment_to_accountFragment)
+        //Backボタン等で遷移した場合は元々存在するインスタンスをそのまま返却する
+        if (_binding == null) {
+            _binding = FragmentTransferBinding.inflate(inflater, container, false)
+            recyclerView.adapter = AccountListAdapter(
+                viewModel.accounts,
+                this,
+                viewModel.selectedPositions
+            )
+            recyclerView.layoutManager = LinearLayoutManager(activity)
+            binding.button3.setOnClickListener{
+                findNavController().navigate(R.id.action_transferFragment_to_accountFragment)
+            }
         }
         return binding.root
     }

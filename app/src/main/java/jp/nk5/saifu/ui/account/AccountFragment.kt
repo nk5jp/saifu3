@@ -5,15 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import jp.nk5.saifu.MyFragment
 import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentAccountBinding
-import jp.nk5.saifu.domain.Account
 import jp.nk5.saifu.service.AccountService
 import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.viewmodel.AccountUpdateType
@@ -33,19 +29,16 @@ class AccountFragment
      * 処理で使用するパラメータ群
      */
     private var _binding: FragmentAccountBinding? = null
-    private val binding get() = _binding!!
-    private val viewModel by lazy { AccountViewModel() }
+    private val binding get() = _binding!! //レイアウト情報
+    private val viewModel by lazy { AccountViewModel() } //本画面のviewModel
     private val service by lazy { AccountService(common.accountRepository, viewModel) } //サービス
-    private var _editText: EditText? = null
-    private val editText get() = _editText!!
-    private var _recyclerView: RecyclerView? = null
-    private val recyclerView get() = _recyclerView!!
-    private var _button: Button? = null
-    private val button get() = _button!!
+    private val editText by lazy { binding.editText1 } //口座名の入力用editText
+    private val recyclerView by lazy { binding.recyclerView1 } //口座一覧のrecyclerView
+    private val button by lazy { binding.button1 } //開設or編集ボタン
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
-     * lazyによりviewModelの初期化も行われる
+     * この処理はインスタンスが生成された初回のみ実行される
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,30 +46,39 @@ class AccountFragment
     }
 
     /**
-     * bindingおよびview情報を初期化
+     * 初回表示の際は、レイアウトをインフレートし、アダプター情報を設定する
+     * Backボタンによる再表示の場合はレイアウト情報をそのまま返却する
+     * ちなみにこの処理はホームボタンやタスクボタンを介しての再表示する際には通過しない
+     * （その必要がある処理はonStartに記述すること）
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAccountBinding.inflate(inflater, container, false)
-        _editText = binding.editText1
-        _recyclerView = binding.recyclerView1
-        _button = binding.button1
-        button.setOnClickListener(this)
-        recyclerView.adapter = AccountListAdapter(
-            viewModel.accounts,
-            this,
-            viewModel.selectedPositions
-        )
-        recyclerView.layoutManager = LinearLayoutManager(activity)
+        if (_binding == null) {
+            //以下の一連の処理はインスタンスを初期生成したときのみ通過する
+            _binding = FragmentAccountBinding.inflate(inflater, container, false)
+            button.setOnClickListener(this)
+            //この時点ではviewModelの参照先メモリを共有しているだけで、その先のListは空
+            recyclerView.adapter = AccountListAdapter(
+                viewModel.accounts,
+                this,
+                viewModel.selectedPositions
+            )
+            recyclerView.layoutManager = LinearLayoutManager(activity)
+        }
         return binding.root
     }
 
+    /**
+     * viewModel内のデータ初期化と描画を行う
+     * この処理は必ずonCreateViewの後に来るため、順序性管理の必要がある処理はこちらに記載する
+     * なお、こちらの通過ルールもonCreateViewに順ずる
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Main).launch {
-            service.initializeView()
+            service.updateView()
         }
     }
 
@@ -99,7 +101,7 @@ class AccountFragment
                     }
                     //editTextに選択している口座名を入力する
                     AccountUpdateType.EDIT_INPUT -> {
-                        editText.setText(viewModel.getSelectedAccount().name)
+                        editText.setText(viewModel.getSelectingAccount().name)
                     }
                     //buttonの文字列を「開設」にする
                     AccountUpdateType.BUTTON_AS_CREATE -> {
@@ -115,7 +117,8 @@ class AccountFragment
     }
 
     /**
-     * ボタンを押下したときの処理
+     * 開設or更新ボタンを押下したときの処理
+     * View.OnClickListenerで定義されている関数の実装
      */
     override fun onClick(view: View) {
         try {
@@ -123,13 +126,7 @@ class AccountFragment
             //エラーチェック：空白は受け付けない
             if (name == "") { alert("口座名が未入力です"); return }
             CoroutineScope(Dispatchers.Main).launch {
-                if (viewModel.isSelected()) {
-                    //選択している場合：更新処理
-                    service.updateAccount(viewModel.getSelectingPosition(), name)
-                } else {
-                    //選択していない場合：開設処理
-                    service.createAccount(name)
-                }
+                service.updateAccount(name)
             }
         } catch (e: Exception) {
             alert(e.toString())
@@ -137,21 +134,14 @@ class AccountFragment
     }
 
     /**
-     * recyclerViewの各行を選択したときの処理
+     * 選択した行番号を踏まえ、recyclerView上の選択／非選択のモードを更新する
+     * AccountListAdapter.OnItemClickListenerで定義されている関数の実装
      */
     override fun onItemClick(view: View) {
         try {
             val newPosition = recyclerView.getChildAdapterPosition(view)
-            if (viewModel.isSelected() && viewModel.getSelectingPosition() == newPosition) {
-                //選択済みの行を再選択した場合：選択解除処理
-                CoroutineScope(Dispatchers.Main).launch {
-                    service.unselectAccount(newPosition)
-                }
-            } else {
-                //それ以外の場合：選択処理
-                CoroutineScope(Dispatchers.Main).launch {
-                    service.selectAccount(newPosition)
-                }
+            CoroutineScope(Dispatchers.Main).launch {
+                service.selectAccount(newPosition)
             }
         } catch (e: Exception) {
             alert(e.toString())
@@ -160,14 +150,17 @@ class AccountFragment
 
     /**
      * recyclerViewの各行を長押ししたときの処理
+     * AccountListAdapter.OnItemClickListenerで定義されている関数の実装
      */
     override fun onItemLongClick(view: View): Boolean {
         val position = recyclerView.getChildAdapterPosition(view)
         AlertDialog.Builder(requireContext())
-            .setTitle("%sを削除しますか？".format(viewModel.getAccountByPosition(position).name))
+            .setTitle("%sを削除しますか？".format(
+                viewModel.getAccountByPosition(position).name
+            ))
             .setMessage("削除後は元に戻せません")
             .setPositiveButton("YES") { _, _ ->
-                //対象口座を削除する
+                //YES押下時：対象口座を削除する
                 try {
                     CoroutineScope(Dispatchers.Main).launch {
                         service.deleteAccount(position)
@@ -177,7 +170,7 @@ class AccountFragment
                 }
             }
             .setNegativeButton("NO") { _, _ ->
-                //何も実行しない
+                //NO押下時：何も実行しない
             }.show()
         return true
     }
