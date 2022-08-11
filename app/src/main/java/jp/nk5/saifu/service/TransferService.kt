@@ -1,10 +1,14 @@
 package jp.nk5.saifu.service
 
+import jp.nk5.saifu.domain.MyDate
+import jp.nk5.saifu.domain.Transfer
 import jp.nk5.saifu.domain.repository.AccountRepository
+import jp.nk5.saifu.domain.repository.TransferRepository
 import jp.nk5.saifu.viewmodel.TransferViewModel
 
 class TransferService(
     private val accountRepository: AccountRepository,
+    private val transferRepository: TransferRepository,
     private val viewModel: TransferViewModel
 ) {
 
@@ -32,6 +36,15 @@ class TransferService(
                 val debit = viewModel.getDebitAccount()
                 debit.amount += amount
                 accountRepository.setAccount(debit)
+                transferRepository.setTransfer(
+                    Transfer(
+                        0,
+                        MyDate.today(),
+                        debit,
+                        null,
+                        amount
+                    )
+                )
                 viewModel.updateList()
             }
             //振替処理
@@ -42,6 +55,15 @@ class TransferService(
                 credit.amount -= amount
                 accountRepository.setAccount(debit)
                 accountRepository.setAccount(credit)
+                transferRepository.setTransfer(
+                    Transfer(
+                        0,
+                        MyDate.today(),
+                        debit,
+                        credit,
+                        amount
+                    )
+                )
                 viewModel.updateList()
             }
             else -> {

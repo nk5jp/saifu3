@@ -9,5 +9,5 @@ interface AccountRepository {
     suspend fun setAccount(account: Account)
     suspend fun getAccounts(): MutableList<Account>
     suspend fun getValidAccounts(): MutableList<Account>
-    fun getAccountById(id: Int): Account
+    suspend fun getAccountById(id: Int): Account
 }

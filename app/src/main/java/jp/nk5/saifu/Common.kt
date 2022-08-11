@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import jp.nk5.saifu.infra.AppDatabase
 import jp.nk5.saifu.infra.repository.AccountRepository
+import jp.nk5.saifu.infra.repository.TransferRepository
 
 /**
  * フラグメントを跨いで取得する必要がある情報を格納するレイヤ。
@@ -20,4 +21,6 @@ class Common: Application() {
     }
 
     val accountRepository by lazy { AccountRepository(db) }
+    val transferRepository by lazy { TransferRepository(db, accountRepository) }
+
 }

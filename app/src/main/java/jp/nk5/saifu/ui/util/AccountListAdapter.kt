@@ -41,6 +41,9 @@ class AccountListAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.textView1.text = dataSet[position].name
         viewHolder.textView2.text = "%,d円".format(dataSet[position].amount)
+        if (dataSet[position].amount < 0) {
+            viewHolder.textView2.setTextColor(Color.RED)
+        }
         if (position in selectedPosition) {
             viewHolder.textView1.setBackgroundColor(Color.YELLOW)
             viewHolder.textView2.setBackgroundColor(Color.YELLOW)

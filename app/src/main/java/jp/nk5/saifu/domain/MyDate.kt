@@ -1,5 +1,7 @@
 package jp.nk5.saifu.domain
 
+import java.time.LocalDate
+
 /**
  * 日付を意味するドメイン
  * 2種類のコンストラクタからインスタンス化できるようにする。
@@ -8,6 +10,13 @@ class MyDate {
     val year: Int
     val month: Int
     val day: Int
+
+    companion object {
+        fun today(): MyDate {
+            val date = LocalDate.now()
+            return MyDate(date.year, date.monthValue, date.dayOfMonth)
+        }
+    }
 
     constructor(_ymd: Int) {
         year = _ymd / 10000

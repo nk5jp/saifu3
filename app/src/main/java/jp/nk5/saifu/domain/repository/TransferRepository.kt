@@ -8,6 +8,6 @@ import jp.nk5.saifu.domain.Transfer
  * Transferを管理するRepository
  */
 interface TransferRepository {
-    fun setTransfer(transfer: Transfer)
-    fun getTransferByYearMonth(yearMonth: Int): List<Transfer>
+    suspend fun setTransfer(transfer: Transfer)
+    suspend fun getTransferByYearMonth(yearMonth: Int): List<Transfer>
 }

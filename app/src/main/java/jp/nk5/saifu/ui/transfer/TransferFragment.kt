@@ -28,7 +28,9 @@ class TransferFragment
     private var _binding: FragmentTransferBinding? = null
     private val binding get() = _binding!! //レイアウト情報
     private val viewModel by lazy { TransferViewModel() } //本画面のviewModel
-    private val service by lazy { TransferService(common.accountRepository, viewModel) }
+    private val service by lazy {
+        TransferService(common.accountRepository, common.transferRepository, viewModel)
+    }
     private val recyclerView by lazy { binding.recyclerView1 } //口座一覧のrecyclerView
     private val editText by lazy { binding.editText1 } //金額入力用のeditText
     private val textView by lazy { binding.textView1 } //選択状態説明用のtextView

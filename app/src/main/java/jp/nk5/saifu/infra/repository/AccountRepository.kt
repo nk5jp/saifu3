@@ -83,11 +83,12 @@ class AccountRepository (private val db: AppDatabase)
 
 
     /**
-     * idに合致するaccountを返却する
+     * idに合致する口座のインスタンスを返却する
      * この処理は例外をスローする可能性がある
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      */
-    override fun getAccountById(id: Int): Account {
+    override suspend fun getAccountById(id: Int): Account = withContext(Dispatchers.IO)  {
         val account = accounts.find { it.id == id }
-        return account ?: throw Exception("this account does not exists on DB.")
+        account ?: throw Exception("this account does not exists on DB.")
     }
 }

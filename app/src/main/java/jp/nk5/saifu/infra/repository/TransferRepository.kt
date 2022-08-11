@@ -1,11 +1,12 @@
 package jp.nk5.saifu.infra.repository
 
-import jp.nk5.saifu.domain.Account
 import jp.nk5.saifu.domain.MyDate
 import jp.nk5.saifu.domain.Transfer
 import jp.nk5.saifu.domain.repository.AccountRepository
 import jp.nk5.saifu.infra.AppDatabase
 import jp.nk5.saifu.infra.entity.EntityTransfer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class TransferRepository(
         private val db: AppDatabase,
@@ -15,8 +16,9 @@ class TransferRepository(
 
     /**
      * 新しい振替を保存する処理
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      */
-    override fun setTransfer(transfer: Transfer) {
+    override suspend fun setTransfer(transfer: Transfer): Unit = withContext(Dispatchers.IO) {
         db.transferDao().insertTransfer(
             EntityTransfer(
                 0,
@@ -31,10 +33,12 @@ class TransferRepository(
     /**
      * 指定した年月に該当するTransferのリストを返却する。
      * 用途を踏まえ、このリストは永続化しない。すなわち、2度コールした場合、論理的に同じ振替でも別のインスタンスとなる。
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      * また、この処理は例外をスローし得る（getAccountById）点を留意すること
      */
-    override fun getTransferByYearMonth(yearMonth: Int) : List<Transfer> {
-        return db.transferDao().selectByYearMonth(yearMonth).map { e ->
+    override suspend fun getTransferByYearMonth(yearMonth: Int)
+    : List<Transfer> = withContext(Dispatchers.IO) {
+        db.transferDao().selectByYearMonth(yearMonth).map { e ->
             Transfer(
                 e.id,
                 MyDate(e.date),
