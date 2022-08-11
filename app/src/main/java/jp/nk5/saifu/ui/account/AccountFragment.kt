@@ -149,7 +149,7 @@ class AccountFragment
     }
 
     /**
-     * recyclerViewの各行を長押ししたときの処理
+     * 長押しした行の口座を削除して良いか伺うダイアログを表示する
      * AccountListAdapter.OnItemClickListenerで定義されている関数の実装
      */
     override fun onItemLongClick(view: View): Boolean {

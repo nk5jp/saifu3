@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TransferFragment
-    : MyFragment(), Observer, AccountListAdapter.OnItemClickListener {
+    : MyFragment(), View.OnClickListener, Observer, AccountListAdapter.OnItemClickListener {
 
 
     /**
@@ -28,10 +28,13 @@ class TransferFragment
     private var _binding: FragmentTransferBinding? = null
     private val binding get() = _binding!! //レイアウト情報
     private val viewModel by lazy { TransferViewModel() } //本画面のviewModel
-    private val service by lazy { TransferService(common.accountRepository, viewModel) }
+    private val service by lazy {
+        TransferService(common.accountRepository, common.transferRepository, viewModel)
+    }
     private val recyclerView by lazy { binding.recyclerView1 } //口座一覧のrecyclerView
     private val editText by lazy { binding.editText1 } //金額入力用のeditText
-    private val textView by lazy { binding.textView1 } //選択状態説明用のtextView
+    private val textView1 by lazy { binding.textView1 } //選択状態説明用のtextView
+    private val textView2 by lazy { binding.textView2 } //合計金額表示用のtextView
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -56,6 +59,7 @@ class TransferFragment
         if (_binding == null) {
             //以下の一連の処理はインスタンスを初期生成したときのみ通過する
             _binding = FragmentTransferBinding.inflate(inflater, container, false)
+            binding.button1.setOnClickListener(this)
             //この時点ではviewModelの参照先メモリを共有しているだけで、その先のListは空
             recyclerView.adapter = AccountListAdapter(
                 viewModel.accounts,
@@ -63,6 +67,7 @@ class TransferFragment
                 viewModel.selectedPositions
             )
             recyclerView.layoutManager = LinearLayoutManager(activity)
+
             //画面遷移のイベントをボタンに設定する
             binding.button3.setOnClickListener{
                 findNavController().navigate(R.id.action_transferFragment_to_accountFragment)
@@ -79,7 +84,7 @@ class TransferFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Main).launch {
-            service.updateView()
+            service.initializeView()
         }
     }
 
@@ -101,23 +106,49 @@ class TransferFragment
                     }
                     //textView1の文字列を「未選択」にする
                     TransferUpdateType.TEXTVIEW_AS_UNSELECTED -> {
-                        textView.setText(R.string.lbl_unselected)
+                        textView1.setText(R.string.lbl_unselected)
                     }
                     //textView1の文字列を「XXXに入金」にする
                     TransferUpdateType.TEXTVIEW_AS_PAYMENT -> {
-                        textView.text = "%sに入金".format(
+                        textView1.text = "%sに入金".format(
                             viewModel.getDebitAccount().name
                         )
                     }
                     //textView1の文字列を「XXXからYYYに振替」にする
                     TransferUpdateType.TEXTVIEW_AS_TRANSFER -> {
-                        textView.text = "%sから%sに振替".format(
+                        textView1.text = "%sから%sに振替".format(
                             viewModel.getCreditAccount().name,
                             viewModel.getDebitAccount().name
                         )
                     }
+                    //textView2の文字列を「合計：XXX円」にする
+                    TransferUpdateType.TEXTVIEW_AS_SUM -> {
+                        textView2.text = "合計：%,d円".format(
+                            service.sumAmounts()
+                        )
+                    }
                 }
             }
+        }
+    }
+
+    /**
+     * 振替ボタンを押下したときの処理
+     * View.OnClickListenerで定義されている関数の実装
+     */
+    override fun onClick(view: View) {
+        try {
+            //エラーチェック：口座未選択の場合は何もしない
+            if (viewModel.isUnselected()) {alert("口座が選択されていません"); return }
+            val strAmount = editText.text.toString()
+            //エラーチェック：空白は受け付けない
+            if (strAmount == "") { alert("口座名が未入力です"); return }
+            val amount = strAmount.toInt()
+            CoroutineScope(Dispatchers.Main).launch {
+                service.transfer(amount)
+            }
+        } catch (e: Exception) {
+            alert(e.toString())
         }
     }
 
@@ -136,7 +167,11 @@ class TransferFragment
         }
     }
 
+    /**
+     * 何もしないが、アダプター共通化の都合上、空の処理を実装している
+     * AccountListAdapter.OnItemClickListenerで定義されている関数の実装
+     */
     override fun onItemLongClick(view: View): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 }

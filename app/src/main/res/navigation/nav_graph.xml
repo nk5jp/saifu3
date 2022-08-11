@@ -33,8 +33,8 @@
         tools:layout="@layout/fragment_transfer" >
         <action
             android:id="@+id/action_transferFragment_to_accountFragment"
-            app:enterAnim="@anim/slide_from_bottom"
-            app:exitAnim="@anim/slide_to_top"
+            app:enterAnim="@anim/slide_from_right"
+            app:exitAnim="@anim/slide_to_left"
             app:destination="@id/accountFragment" />
         <action
             android:id="@+id/action_transferFragment_to_transferHistoryFragment"
