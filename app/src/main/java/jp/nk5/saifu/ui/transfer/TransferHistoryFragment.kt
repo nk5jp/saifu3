@@ -1,6 +1,7 @@
 package jp.nk5.saifu.ui.transfer
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentTransferHistoryBinding
 import jp.nk5.saifu.domain.MyDate
 import jp.nk5.saifu.service.TransferHistoryService
-import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.ui.util.TransferListAdapter
 import jp.nk5.saifu.viewmodel.Observer
 import jp.nk5.saifu.viewmodel.TransferHistoryUpdateType
@@ -77,7 +77,9 @@ class TransferHistoryFragment : MyFragment(), View.OnClickListener, Observer {
         }
     }
 
-
+    /**
+     * 画面の更新処理、各viewModelから通知される
+     */
     @SuppressLint("NotifyDataSetChanged")
     override suspend fun updateView(updateTypes: List<UpdateType>) {
         withContext(Dispatchers.Main) {
@@ -97,8 +99,23 @@ class TransferHistoryFragment : MyFragment(), View.OnClickListener, Observer {
         }
     }
 
-    override fun onClick(p0: View?) {
-        TODO("Not yet implemented")
+    /**
+     * 検索対象の年月を指定して検索処理を実行する。
+     * Androidに年月指定用のモジュールが存在しないので、カレンダーで指定する方式を採用する。
+     * View.OnClickListenerで定義されている関数の実装
+     */
+    override fun onClick(view: View) {
+        DatePickerDialog(
+            requireActivity(),
+            { _, year, month, day ->
+                CoroutineScope(Dispatchers.Main).launch {
+                    //1月は0月となっているので、サービスに渡す月は+1しておく
+                    service.updateView(MyDate(year, month + 1, day))
+                }
+            },
+            viewModel.date.year, //ダイアログの初期年
+            viewModel.date.month - 1, //ダイアログの初期月、ここは逆にマイナス1が必要
+            viewModel.date.day).show() //ダイアログの初期日
     }
 
 }
