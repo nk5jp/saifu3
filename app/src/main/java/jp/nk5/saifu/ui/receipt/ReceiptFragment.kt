@@ -11,7 +11,6 @@ import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.databinding.FragmentReceiptBinding
 import jp.nk5.saifu.domain.Title
 import jp.nk5.saifu.service.ReceiptService
-import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.ui.util.AccountSpinnerAdapter
 import jp.nk5.saifu.ui.util.DetailListAdapter
 import jp.nk5.saifu.ui.util.TitleSpinnerAdapter
@@ -46,6 +45,7 @@ class ReceiptFragment
     private val editText by lazy { binding.editText1 }  //金額入力用のボタン
     private val spinner2 by lazy { binding.spinner2 } //口座選択用のスピナー
     private val spinner1 by lazy { binding.spinner1 } //口座選択用のスピナー
+    private val textView by lazy { binding.textView1 } //合計金額記載用のtextView
     private val recyclerView by lazy { binding.recyclerView1 } //明細一覧
 
     /**
@@ -117,6 +117,11 @@ class ReceiptFragment
                         //RecyclerView1に更新を通知する
                         ReceiptUpdateType.LIST_UPDATE -> {
                             recyclerView.adapter!!.notifyDataSetChanged()
+                        }
+                        //合計金額を計算してtextView1に反映する
+                        ReceiptUpdateType.TEXT_AS_TOTAL -> {
+                            val results = service.sum()
+                            textView.text = "合計：%,d円（内税：%,d円）".format(results[0], results[1])
                         }
                     }
                 }

@@ -46,4 +46,34 @@ class ReceiptService(
     suspend fun changeTaxType(position: Int) {
         viewModel.changeTaxType(position)
     }
+
+    /**
+     * 本処理は仕様バグの可能性があるため、物理レシートとの合計値の合致確認を徹底すること
+     * 戻り値は要素数が2のリスト。1つ目が税込合計金額、2つ目が内税
+     */
+    fun sum(): List<Int> {
+        //税込価格の合計値
+        val includeSum = viewModel.details
+            .filter{ it.taxType == TaxType.INCLUDE }
+            .sumOf{ it.amount }
+        //税抜価格（8%）の合計値
+        var excludeEightSum = viewModel.details
+            .filter { it.taxType == TaxType.EXCLUDE_EIGHT }
+            .sumOf { it.amount }
+        //税額の計算と合計値への加算
+        val excludeEightTax = (excludeEightSum * 8 / 100)
+        excludeEightSum += excludeEightTax
+        //税抜価格（10%）の合計値
+        var excludeTenSum = viewModel.details
+            .filter { it.taxType == TaxType.EXCLUDE_TEN }
+            .sumOf { it.amount }
+        //税額の計算と合計値への加算
+        val excludeTenTax = (excludeTenSum * 10 / 100)
+        excludeTenSum += excludeTenTax
+        return listOf(
+            includeSum + excludeEightSum + excludeTenSum,
+            excludeEightTax + excludeTenTax
+        )
+    }
+
 }
