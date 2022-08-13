@@ -62,11 +62,10 @@ class ReceiptRepository(
      * 指定した年月日のレシートのリストを取得する処理
      * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      */
-    override suspend fun getReceiptByYmd(year: Int, month: Int, day: Int)
+    override suspend fun getReceiptByYmd(date: MyDate)
     : MutableList<Receipt> = withContext(Dispatchers.IO) {
-        val ymd: Int = MyDate(year, month, day).getYmd()
         //DBから該当レコード群をMapとして取得し、ドメインに変換していく
-        db.receiptDao().selectByYearMonth(ymd).map { e ->
+        db.receiptDao().selectByYearMonth(date.getYmd()).map { e ->
             //e.keyがEntityReceipt、e.valueがList<EntityReceiptDetails>
             val receiptDetails = mutableListOf<ReceiptDetail>()
             //detailsの変換

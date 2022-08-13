@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="jp.nk5.saifu.fragment.MainFragment"
+        android:name="jp.nk5.saifu.ui.main.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/fragment_main" >
         <action
