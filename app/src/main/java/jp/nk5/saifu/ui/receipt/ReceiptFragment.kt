@@ -176,7 +176,18 @@ class ReceiptFragment
         }
     }
 
+    /**
+     * 対象明細をリストから除外する
+     */
     override fun onItemLongClick(view: View): Boolean {
-        TODO("Not yet implemented")
+        try {
+            val position = recyclerView.getChildAdapterPosition(view)
+            CoroutineScope(Dispatchers.Main).launch {
+                service.deleteDetail(position)
+            }
+        } catch (e: Exception) {
+            alert(e.toString())
+        }
+        return true
     }
 }

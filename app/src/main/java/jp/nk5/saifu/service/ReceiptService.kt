@@ -47,7 +47,12 @@ class ReceiptService(
         viewModel.changeTaxType(position)
     }
 
+    suspend fun deleteDetail(position: Int) {
+        viewModel.deleteDetail(position)
+    }
+
     /**
+     * viewModelの内容を踏まえて合計金額を算出する。
      * 本処理は仕様バグの可能性があるため、物理レシートとの合計値の合致確認を徹底すること
      * 戻り値は要素数が2のリスト。1つ目が税込合計金額、2つ目が内税
      */

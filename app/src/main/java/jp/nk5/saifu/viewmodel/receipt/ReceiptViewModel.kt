@@ -56,6 +56,21 @@ class ReceiptViewModel: MyViewModel() {
     }
 
     /**
+     * 指定した位置の明細を削除してidを再採番し、再描画を通知する
+     */
+    suspend fun deleteDetail(position: Int) {
+        details.removeAt(position)
+        //idが欠番になると追加処理などで不都合が生じ得るため、0から採番しなおす
+        var newId = 0
+        for (detail in details) detail.id = newId++
+        val types = listOf(
+            ReceiptUpdateType.LIST_UPDATE,
+            ReceiptUpdateType.TEXT_AS_TOTAL
+        )
+        notifyObservers(types)
+    }
+
+    /**
      * 新たにdetailsを作成するときに付与すべきIDを返却する
      */
     fun getNewDetailId() = details.size
