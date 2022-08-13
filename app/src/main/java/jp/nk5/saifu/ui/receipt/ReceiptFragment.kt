@@ -159,6 +159,8 @@ class ReceiptFragment
             when (view.id) {
                 //購入（修正）ボタン押下時
                 R.id.button1 -> {
+                    //エラーチェック：detailの件数0のレシートの作成は認めない
+                    if (viewModel.details.size == 0) { alert("明細がありません"); return }
                     val account = spinner2.selectedItem as Account
                     CoroutineScope(Dispatchers.Main).launch {
                         service.updateReceipt(account)
