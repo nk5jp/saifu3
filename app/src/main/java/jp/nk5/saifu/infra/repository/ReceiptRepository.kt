@@ -90,6 +90,37 @@ class ReceiptRepository(
     }
 
     /**
+     * 指定したIDのレシートのインスタンスを取得する処理
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
+     */
+    override suspend fun getReceiptById(id: Int)
+            : Receipt = withContext(Dispatchers.IO) {
+        //DBから該当レコード群をMapとして取得し、ドメインに変換していく
+        db.receiptDao().selectById(id).map { e ->
+            //e.keyがEntityReceipt、e.valueがList<EntityReceiptDetails>
+            val receiptDetails = mutableListOf<ReceiptDetail>()
+            //detailsの変換
+            for (detail in e.value) {
+                receiptDetails.add(
+                    ReceiptDetail(
+                        detail.detailId,
+                        Title.getTitleById(detail.titleId),
+                        detail.amount,
+                        TaxType.getTaxTypeById(detail.taxTypeId)
+                    )
+                )
+            }
+            //receiptの変換
+            Receipt(
+                e.key.id,
+                MyDate(e.key.date),
+                accountRepository.getAccountById(e.key.accountId),
+                receiptDetails
+            )
+        }.toMutableList()[0]
+    }
+
+    /**
      * レシートの物理削除処理
      * 紐づくdetailsはカスケードで削除されるので特に処理は記述しない
      * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。

@@ -68,7 +68,10 @@ class MainFragment
             recyclerView.layoutManager = LinearLayoutManager(activity)
             //ボタンクリック時の遷移処理を付加する
             binding.button1.setOnClickListener {
-                findNavController().navigate(R.id.action_mainFragment_to_receiptFragment)
+                //配列の1要素目は入力年月日、2要素目は対象ID（今回は新規なので0）
+                val action = MainFragmentDirections
+                    .actionMainFragmentToReceiptFragment(viewModel.date.getYmd(), 0)
+                findNavController().navigate(action)
             }
             binding.button2.setOnClickListener {
                 findNavController().navigate(R.id.action_mainFragment_to_transferFragment)
@@ -144,8 +147,22 @@ class MainFragment
         }
     }
 
+    /**
+     * 選択した行番号に対応づくレシートの作成日とidを用いてレシート編集画面に遷移する
+     * ReceiptListAdapter.OnItemClickListenerで定義されている関数の実装
+     */
     override fun onItemClick(view: View) {
-        TODO("Not yet implemented")
+        try {
+            val position = recyclerView.getChildAdapterPosition(view)
+            val action = MainFragmentDirections
+                .actionMainFragmentToReceiptFragment(
+                    viewModel.date.getYmd(),
+                    viewModel.receipts[position].id
+                )
+            findNavController().navigate(action)
+        } catch (e: Exception) {
+            alert(e.toString())
+        }
     }
 
     override fun onItemLongClick(view: View): Boolean {
