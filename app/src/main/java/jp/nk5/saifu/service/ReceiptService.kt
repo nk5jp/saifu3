@@ -18,8 +18,7 @@ class ReceiptService(
         val accounts = accountRepository.getValidAccounts()
         viewModel.initializeViewModel(
             Receipt(0, MyDate.today(), accounts[0], mutableListOf()),
-            accounts,
-            listOf(Title.FOOD, Title.ENTERTAINMENT)
+            accounts
         )
     }
 

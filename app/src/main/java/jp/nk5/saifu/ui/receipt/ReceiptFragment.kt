@@ -8,6 +8,7 @@ import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.databinding.FragmentReceiptBinding
 import jp.nk5.saifu.service.ReceiptService
 import jp.nk5.saifu.ui.util.AccountSpinnerAdapter
+import jp.nk5.saifu.ui.util.TitleSpinnerAdapter
 import jp.nk5.saifu.viewmodel.Observer
 import jp.nk5.saifu.viewmodel.UpdateType
 import jp.nk5.saifu.viewmodel.receipt.ReceiptUpdateType
@@ -35,8 +36,8 @@ class ReceiptFragment : MyFragment(), Observer {
     }
     private val button by lazy { binding.button1 }  //購入もしくは修正用のボタン
     private val editText by lazy { binding.editText1 }  //金額入力用のボタン
-    private val spinner1 by lazy { binding.spinner2 } //口座選択用のスピナー
-
+    private val spinner2 by lazy { binding.spinner2 } //口座選択用のスピナー
+    private val spinner1 by lazy { binding.spinner1 } //口座選択用のスピナー
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -58,6 +59,8 @@ class ReceiptFragment : MyFragment(), Observer {
     ): View {
         if (_binding == null) {
             _binding = FragmentReceiptBinding.inflate(inflater, container, false)
+            //費用科目はDBではなくenumから作成し、かつ静的なリストであるため、ここで作成したら以後は再設定不要
+            spinner1.adapter = TitleSpinnerAdapter()
         }
         return binding.root
     }
@@ -78,7 +81,7 @@ class ReceiptFragment : MyFragment(), Observer {
                 when (updateType) {
                     //spinnerに口座情報の一覧をセットする
                     ReceiptUpdateType.SPINNER_AS_ACCOUNT -> {
-                        spinner1.adapter = AccountSpinnerAdapter(
+                        spinner2.adapter = AccountSpinnerAdapter(
                             viewModel.accounts
                         )
                     }
