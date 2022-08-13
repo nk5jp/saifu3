@@ -8,6 +8,10 @@ class MainViewModel: MyViewModel() {
     val receipts = mutableListOf<Receipt>()
     var date = MyDate(99991231)
 
+    /**
+     * リストを空にしてインスタンスを詰め直し、再描画を通知する
+     * recyclerViewがインスタンスを参照しているのでこの方式にしている
+     */
     suspend fun updateList(newReceipts: List<Receipt>, newDate: MyDate) {
         receipts.clear()
         for (receipt in newReceipts) {

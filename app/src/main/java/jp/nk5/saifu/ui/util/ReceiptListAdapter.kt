@@ -37,9 +37,9 @@ class ReceiptListAdapter(
      * 各行のデータをバインドする
      */
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.textView1.text = "%,d円(%s)".format(
-            receipts[position].sum()[0],
-            receipts[position].account.name
+        viewHolder.textView1.text = "%s: %,d円".format(
+            receipts[position].account.name,
+            receipts[position].sum()[0]
         )
         viewHolder.textView1.setOnLongClickListener(this)
         viewHolder.textView1.setOnClickListener(this)
