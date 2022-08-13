@@ -4,7 +4,7 @@ import jp.nk5.saifu.domain.MyDate
 import jp.nk5.saifu.domain.Transfer
 import jp.nk5.saifu.domain.repository.AccountRepository
 import jp.nk5.saifu.domain.repository.TransferRepository
-import jp.nk5.saifu.viewmodel.TransferViewModel
+import jp.nk5.saifu.viewmodel.transfer.TransferViewModel
 
 class TransferService(
     private val accountRepository: AccountRepository,

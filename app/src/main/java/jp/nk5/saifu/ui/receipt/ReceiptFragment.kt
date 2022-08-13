@@ -1,10 +1,10 @@
-package jp.nk5.saifu.fragment.receipt
+package jp.nk5.saifu.ui.receipt
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import jp.nk5.saifu.MyFragment
+import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentReceiptBinding
 

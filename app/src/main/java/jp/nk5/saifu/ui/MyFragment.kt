@@ -1,12 +1,13 @@
-package jp.nk5.saifu
+package jp.nk5.saifu.ui
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import jp.nk5.saifu.Common
 
 open class MyFragment: Fragment() {
 
     //各フラグメントのonCreateViewで初期化
-    val common by lazy {context?.applicationContext as Common}
+    val common by lazy {context?.applicationContext as Common }
 
     /**
      * 警告処理

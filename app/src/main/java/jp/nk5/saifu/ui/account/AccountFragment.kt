@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import jp.nk5.saifu.MyFragment
+import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentAccountBinding
 import jp.nk5.saifu.service.AccountService
 import jp.nk5.saifu.ui.util.AccountListAdapter
-import jp.nk5.saifu.viewmodel.AccountUpdateType
-import jp.nk5.saifu.viewmodel.AccountViewModel
+import jp.nk5.saifu.viewmodel.account.AccountUpdateType
+import jp.nk5.saifu.viewmodel.account.AccountViewModel
 import jp.nk5.saifu.viewmodel.Observer
 import jp.nk5.saifu.viewmodel.UpdateType
 import kotlinx.coroutines.CoroutineScope

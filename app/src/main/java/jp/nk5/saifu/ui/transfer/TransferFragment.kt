@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import jp.nk5.saifu.MyFragment
+import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentTransferBinding
 import jp.nk5.saifu.service.TransferService
 import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.viewmodel.*
+import jp.nk5.saifu.viewmodel.transfer.TransferUpdateType
+import jp.nk5.saifu.viewmodel.transfer.TransferViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

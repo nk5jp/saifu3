@@ -1,6 +1,7 @@
-package jp.nk5.saifu.viewmodel
+package jp.nk5.saifu.viewmodel.transfer
 
 import jp.nk5.saifu.domain.Account
+import jp.nk5.saifu.viewmodel.MyViewModel
 
 class TransferViewModel: MyViewModel() {
     val accounts = mutableListOf<Account>()
