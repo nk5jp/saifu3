@@ -1,14 +1,17 @@
 package jp.nk5.saifu.ui.receipt
 
 import android.annotation.SuppressLint
+import androidx.appcompat.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import jp.nk5.saifu.R
 import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.databinding.FragmentReceiptBinding
+import jp.nk5.saifu.domain.Account
 import jp.nk5.saifu.domain.Title
 import jp.nk5.saifu.service.ReceiptService
 import jp.nk5.saifu.ui.util.AccountSpinnerAdapter
@@ -123,6 +126,16 @@ class ReceiptFragment
                             val results = service.sum()
                             textView.text = "合計：%,d円（内税：%,d円）".format(results[0], results[1])
                         }
+                        //結果ダイアログを表示してFragmentを終了する
+                        ReceiptUpdateType.DIALOG_SHOW -> {
+                            val account = spinner2.selectedItem as Account
+                            AlertDialog.Builder(requireContext())
+                                .setTitle("結果")
+                                .setMessage(service.getResultMessage(account))
+                                .setPositiveButton("YES") { _, _ ->
+                                    findNavController().popBackStack()
+                                }.show()
+                        }
                     }
                 }
             }
@@ -141,7 +154,10 @@ class ReceiptFragment
             when (view.id) {
                 //購入（修正）ボタン押下時
                 R.id.button1 -> {
-
+                    val account = spinner2.selectedItem as Account
+                    CoroutineScope(Dispatchers.Main).launch {
+                        service.updateReceipt(account)
+                    }
                 }
                 //追加ボタン押下時
                 R.id.button2 -> {
@@ -164,6 +180,7 @@ class ReceiptFragment
     /**
      * 選択した明細の税種別を変更する
      * 内税⇒外税8%⇒外税10%⇒内税の順番に変更する
+     * DetailListAdapter.OnItemClickListenerで定義されている関数の実装
      */
     override fun onItemClick(view: View) {
         try {
@@ -178,6 +195,7 @@ class ReceiptFragment
 
     /**
      * 対象明細をリストから除外する
+     * DetailListAdapter.OnItemClickListenerで定義されている関数の実装
      */
     override fun onItemLongClick(view: View): Boolean {
         try {

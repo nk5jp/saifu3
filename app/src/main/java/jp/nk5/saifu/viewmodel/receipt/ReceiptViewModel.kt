@@ -6,6 +6,8 @@ import jp.nk5.saifu.viewmodel.MyViewModel
 class ReceiptViewModel: MyViewModel() {
     var id = 0
     var date = MyDate(99991231)
+    var originalAccount: Account? = null
+    var originalSum: Int = 0
     val details = mutableListOf<ReceiptDetail>()
     val accounts = mutableListOf<Account>()
 
@@ -66,6 +68,16 @@ class ReceiptViewModel: MyViewModel() {
         val types = listOf(
             ReceiptUpdateType.LIST_UPDATE,
             ReceiptUpdateType.TEXT_AS_TOTAL
+        )
+        notifyObservers(types)
+    }
+
+    /**
+     * 結果のダイアログを表示する
+     */
+    suspend fun updateReceipt() {
+        val types = listOf(
+            ReceiptUpdateType.DIALOG_SHOW
         )
         notifyObservers(types)
     }

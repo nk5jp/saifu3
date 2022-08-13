@@ -1,16 +1,13 @@
 package jp.nk5.saifu.service
 
-import jp.nk5.saifu.domain.MyDate
-import jp.nk5.saifu.domain.ReceiptDetail
-import jp.nk5.saifu.domain.TaxType
-import jp.nk5.saifu.domain.Title
+import jp.nk5.saifu.domain.*
 import jp.nk5.saifu.domain.repository.AccountRepository
 import jp.nk5.saifu.domain.repository.ReceiptRepository
 import jp.nk5.saifu.viewmodel.receipt.ReceiptViewModel
 
 class ReceiptService(
     val accountRepository: AccountRepository,
-    val receiptRepository: ReceiptRepository,
+    private val receiptRepository: ReceiptRepository,
     val viewModel: ReceiptViewModel
 ) {
 
@@ -47,8 +44,42 @@ class ReceiptService(
         viewModel.changeTaxType(position)
     }
 
+    /**
+     * 対象明細の削除を依頼する
+     */
     suspend fun deleteDetail(position: Int) {
         viewModel.deleteDetail(position)
+    }
+
+    suspend fun updateReceipt(account: Account) {
+        val receipt = Receipt(
+            viewModel.id,
+            viewModel.date,
+            account,
+            viewModel.details
+        )
+        val sum = receipt.sum()[0]
+        when (viewModel.originalAccount) {
+            //新規作成の場合
+            null -> {
+                account.amount -= sum
+            }
+            //同じ口座を使った修正処理の場合
+            account -> {
+                account.amount -= (sum - viewModel.originalSum)
+            }
+            //異なる口座を使った修正処理の場合
+            else -> {
+                viewModel.originalAccount!!.amount += viewModel.originalSum
+                account.amount -= sum
+                accountRepository.setAccount(viewModel.originalAccount!!)
+            }
+        }
+        //金額更新後の口座をDBに保存する
+        accountRepository.setAccount(account)
+        //レシートおよび明細をDBに保存する
+        receiptRepository.setReceipt(receipt)
+        viewModel.updateReceipt()
     }
 
     /**
@@ -57,28 +88,32 @@ class ReceiptService(
      * 戻り値は要素数が2のリスト。1つ目が税込合計金額、2つ目が内税
      */
     fun sum(): List<Int> {
-        //税込価格の合計値
-        val includeSum = viewModel.details
-            .filter{ it.taxType == TaxType.INCLUDE }
-            .sumOf{ it.amount }
-        //税抜価格（8%）の合計値
-        var excludeEightSum = viewModel.details
-            .filter { it.taxType == TaxType.EXCLUDE_EIGHT }
-            .sumOf { it.amount }
-        //税額の計算と合計値への加算
-        val excludeEightTax = (excludeEightSum * 8 / 100)
-        excludeEightSum += excludeEightTax
-        //税抜価格（10%）の合計値
-        var excludeTenSum = viewModel.details
-            .filter { it.taxType == TaxType.EXCLUDE_TEN }
-            .sumOf { it.amount }
-        //税額の計算と合計値への加算
-        val excludeTenTax = (excludeTenSum * 10 / 100)
-        excludeTenSum += excludeTenTax
-        return listOf(
-            includeSum + excludeEightSum + excludeTenSum,
-            excludeEightTax + excludeTenTax
-        )
+        return Receipt.sum(viewModel.details)
+    }
+
+    /**
+     * 結果ダイアログに表示する文字列を返却する
+     */
+    fun getResultMessage(account: Account): String {
+        return when (viewModel.originalAccount) {
+            //新規作成の場合
+            null -> {
+                "%s：%,d円".format(account.name, account.amount)
+            }
+            //同じ口座を用いた修正の場合
+            account -> {
+                "%s：%,d円".format(account.name, account.amount)
+            }
+            //別の口座を用いた修正の場合
+            else -> {
+                "%s：%,d円　%s：%,d円".format(
+                    account.name,
+                    account.amount,
+                    viewModel.originalAccount!!.name,
+                    viewModel.originalAccount!!.amount,
+                )
+            }
+        }
     }
 
 }
