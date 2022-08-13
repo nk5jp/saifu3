@@ -27,6 +27,25 @@ class ReceiptViewModel: MyViewModel() {
     }
 
     /**
+     * 既存のレシート修正画面の初期化処理。
+     * 作成日付を代入し、spinner用の口座一覧をセットしてから、再描画を通知する
+     */
+    suspend fun initializeViewModel(receipt: Receipt, accounts: List<Account>) {
+        this.id = receipt.id
+        this.date = receipt.date
+        this.originalAccount = receipt.account
+        this.originalSum = receipt.sum()[0]
+        for (detail in receipt.details) this.details.add(detail)
+        for (account in accounts) this.accounts.add(account)
+        val types = listOf(
+            ReceiptUpdateType.LIST_UPDATE,
+            ReceiptUpdateType.SPINNER_AS_ACCOUNT,
+            ReceiptUpdateType.TEXT_AS_TOTAL
+        )
+        notifyObservers(types)
+    }
+
+    /**
      * 明細の一覧に新たなアイテムを設定し、再描画を通知する
      */
     suspend fun addItem(detail: ReceiptDetail) {

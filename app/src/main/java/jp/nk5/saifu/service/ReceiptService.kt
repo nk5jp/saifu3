@@ -14,12 +14,23 @@ class ReceiptService(
     /**
      * viewModelに最新の有効口座一覧を共有し、画面を再描画する（後者はviewModelの責務）
      */
-    suspend fun initializeView() {
+    suspend fun initializeView(date: MyDate, id: Int) {
         val accounts = accountRepository.getValidAccounts()
-        viewModel.initializeViewModel(
-            MyDate.today(),
-            accounts
-        )
+        if (id == 0) {
+            //新規作成の場合
+            viewModel.initializeViewModel(
+                date,
+                accounts
+            )
+        } else {
+            //修正の場合
+            val receipt = receiptRepository.getReceiptById(id)
+            viewModel.initializeViewModel(
+                receipt,
+                accounts
+            )
+        }
+
     }
 
     /**

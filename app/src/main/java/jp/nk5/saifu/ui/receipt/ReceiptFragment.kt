@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import jp.nk5.saifu.R
 import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.databinding.FragmentReceiptBinding
 import jp.nk5.saifu.domain.Account
+import jp.nk5.saifu.domain.MyDate
 import jp.nk5.saifu.domain.Title
 import jp.nk5.saifu.service.ReceiptService
 import jp.nk5.saifu.ui.util.AccountSpinnerAdapter
@@ -35,6 +37,7 @@ class ReceiptFragment
      */
     private var _binding: FragmentReceiptBinding? = null
     private val binding get() = _binding!! //レイアウト情報
+    private val args: ReceiptFragmentArgs by navArgs() //MainFragmentから引き継がれた要素
     private val viewModel by lazy { ReceiptViewModel() } //本画面のviewModel
     private val service by lazy { //本画面のservice
         ReceiptService(
@@ -94,7 +97,9 @@ class ReceiptFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Main).launch {
-            service.initializeView()
+            val date = MyDate(args.date)
+            val id = args.id
+            service.initializeView(date, id)
         }
     }
 

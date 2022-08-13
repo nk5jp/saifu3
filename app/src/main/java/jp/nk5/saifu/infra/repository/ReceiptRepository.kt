@@ -62,11 +62,10 @@ class ReceiptRepository(
      * 指定した年月日のレシートのリストを取得する処理
      * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      */
-    override suspend fun getReceiptByYmd(year: Int, month: Int, day: Int)
+    override suspend fun getReceiptByYmd(date: MyDate)
     : MutableList<Receipt> = withContext(Dispatchers.IO) {
-        val ymd: Int = MyDate(year, month, day).getYmd()
         //DBから該当レコード群をMapとして取得し、ドメインに変換していく
-        db.receiptDao().selectByYearMonth(ymd).map { e ->
+        db.receiptDao().selectByYearMonth(date.getYmd()).map { e ->
             //e.keyがEntityReceipt、e.valueがList<EntityReceiptDetails>
             val receiptDetails = mutableListOf<ReceiptDetail>()
             //detailsの変換
@@ -88,6 +87,37 @@ class ReceiptRepository(
                 receiptDetails
             )
         }.toMutableList()
+    }
+
+    /**
+     * 指定したIDのレシートのインスタンスを取得する処理
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
+     */
+    override suspend fun getReceiptById(id: Int)
+            : Receipt = withContext(Dispatchers.IO) {
+        //DBから該当レコード群をMapとして取得し、ドメインに変換していく
+        db.receiptDao().selectById(id).map { e ->
+            //e.keyがEntityReceipt、e.valueがList<EntityReceiptDetails>
+            val receiptDetails = mutableListOf<ReceiptDetail>()
+            //detailsの変換
+            for (detail in e.value) {
+                receiptDetails.add(
+                    ReceiptDetail(
+                        detail.detailId,
+                        Title.getTitleById(detail.titleId),
+                        detail.amount,
+                        TaxType.getTaxTypeById(detail.taxTypeId)
+                    )
+                )
+            }
+            //receiptの変換
+            Receipt(
+                e.key.id,
+                MyDate(e.key.date),
+                accountRepository.getAccountById(e.key.accountId),
+                receiptDetails
+            )
+        }.toMutableList()[0]
     }
 
     /**

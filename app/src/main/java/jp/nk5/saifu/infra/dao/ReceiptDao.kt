@@ -10,6 +10,9 @@ interface ReceiptDao {
     @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.date = :ymd")
     fun selectByYearMonth(ymd: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
 
+    @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.id = :id")
+    fun selectById(id: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
+
     @Insert
     fun insertReceipt(receipt: EntityReceipt): Long
     @Insert
