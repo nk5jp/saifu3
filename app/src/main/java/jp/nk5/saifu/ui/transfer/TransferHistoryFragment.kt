@@ -45,7 +45,6 @@ class TransferHistoryFragment : MyFragment(), View.OnClickListener, Observer {
 
     /**
      * 初回表示の際は、レイアウトをインフレートし、アダプター情報を設定する
-     * Backボタンによる再表示の場合はレイアウト情報をそのまま返却する
      * ちなみにこの処理はホームボタンやタスクボタンを介しての再表示する際には通過しない
      * （その必要がある処理はonStartに記述すること）
      */
