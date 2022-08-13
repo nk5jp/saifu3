@@ -16,4 +16,5 @@
     <string name="lbl_unselected">未選択</string>
     <string name="lbl_transfer">999,999,999円（XXX⇒XXX）</string>
     <string name="btn_ym">%04d/%02d</string>
+    <string name="btn_add">追加</string>
 </resources>

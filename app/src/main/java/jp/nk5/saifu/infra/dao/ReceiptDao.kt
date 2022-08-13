@@ -17,10 +17,11 @@ interface ReceiptDao {
 
     @Update
     fun updateReceipt(receipt: EntityReceipt)
-    @Update
-    fun updateReceiptDetails(vararg details: EntityReceiptDetail)
 
     @Delete
     fun deleteReceipt(receipt: EntityReceipt)
+
+    @Query("delete from receipt_details where receipt_id = :id")
+    fun deleteReceiptDetailsById(id: Int)
 
 }

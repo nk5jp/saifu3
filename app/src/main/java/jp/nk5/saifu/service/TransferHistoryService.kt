@@ -2,7 +2,7 @@ package jp.nk5.saifu.service
 
 import jp.nk5.saifu.domain.MyDate
 import jp.nk5.saifu.domain.repository.TransferRepository
-import jp.nk5.saifu.viewmodel.TransferHistoryViewModel
+import jp.nk5.saifu.viewmodel.transfer.TransferHistoryViewModel
 
 class TransferHistoryService(
     private val repository: TransferRepository,

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import jp.nk5.saifu.infra.AppDatabase
 import jp.nk5.saifu.infra.repository.AccountRepository
+import jp.nk5.saifu.infra.repository.ReceiptRepository
 import jp.nk5.saifu.infra.repository.TransferRepository
 
 /**
@@ -22,5 +23,6 @@ class Common: Application() {
 
     val accountRepository by lazy { AccountRepository(db) }
     val transferRepository by lazy { TransferRepository(db, accountRepository) }
+    val receiptRepository by lazy { ReceiptRepository(db, accountRepository) }
 
 }

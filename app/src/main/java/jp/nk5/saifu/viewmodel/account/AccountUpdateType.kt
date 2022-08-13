@@ -1,4 +1,6 @@
-package jp.nk5.saifu.viewmodel
+package jp.nk5.saifu.viewmodel.account
+
+import jp.nk5.saifu.viewmodel.UpdateType
 
 enum class AccountUpdateType: UpdateType {
     LIST_UPDATE, //RecyclerViewを全て再描画する

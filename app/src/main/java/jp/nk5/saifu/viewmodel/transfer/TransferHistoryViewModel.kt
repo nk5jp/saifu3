@@ -1,7 +1,8 @@
-package jp.nk5.saifu.viewmodel
+package jp.nk5.saifu.viewmodel.transfer
 
 import jp.nk5.saifu.domain.MyDate
 import jp.nk5.saifu.domain.Transfer
+import jp.nk5.saifu.viewmodel.MyViewModel
 
 class TransferHistoryViewModel: MyViewModel() {
     val transfers = mutableListOf<Transfer>()

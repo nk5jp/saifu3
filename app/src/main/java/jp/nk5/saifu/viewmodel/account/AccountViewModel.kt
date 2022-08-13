@@ -1,6 +1,7 @@
-package jp.nk5.saifu.viewmodel
+package jp.nk5.saifu.viewmodel.account
 
 import jp.nk5.saifu.domain.Account
+import jp.nk5.saifu.viewmodel.MyViewModel
 
 class AccountViewModel: MyViewModel() {
     val accounts = mutableListOf<Account>()

@@ -24,15 +24,13 @@ class AccountRepository (private val db: AppDatabase)
     }
 
     /**
-     * 既存の口座を作成もしくは更新する処理
+     * 口座を作成もしくは更新する処理
      * CreateかUpdateかは、idが0か否かで判定する（Roomの仕様にも基づく）
      * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
      */
     override suspend fun setAccount(account: Account):Unit = withContext(Dispatchers.IO) {
-        /**
-         * 新規の場合
-         */
         if (account.id == 0) {
+            //新規登録の場合
             val id = db.accountDao().insertAccount(
                 EntityAccount(
                     0,
@@ -44,6 +42,7 @@ class AccountRepository (private val db: AppDatabase)
             account.id = id
             accounts.add(account)
         } else {
+            //更新の場合
             db.accountDao().updateAccount(
                 EntityAccount(
                     account.id,

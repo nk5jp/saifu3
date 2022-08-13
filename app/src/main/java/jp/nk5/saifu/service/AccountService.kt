@@ -2,7 +2,7 @@ package jp.nk5.saifu.service
 
 import jp.nk5.saifu.domain.Account
 import jp.nk5.saifu.domain.repository.AccountRepository
-import jp.nk5.saifu.viewmodel.AccountViewModel
+import jp.nk5.saifu.viewmodel.account.AccountViewModel
 
 class AccountService(
     private val repository: AccountRepository,

@@ -3,7 +3,12 @@ package jp.nk5.saifu.domain
 /**
  * レシートを意味するドメイン
  */
-data class Receipt(val date: MyDate, var account: Account, val details: List<ReceiptDetail>) {
+data class Receipt(
+    var id: Int,
+    val date: MyDate,
+    var account: Account,
+    val details: MutableList<ReceiptDetail>
+) {
     /**
      * レシートに紐づく金額の合計値を返却する
      */

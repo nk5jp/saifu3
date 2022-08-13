@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import jp.nk5.saifu.MyFragment
+import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentTransferBinding
 import jp.nk5.saifu.service.TransferService
 import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.viewmodel.*
+import jp.nk5.saifu.viewmodel.transfer.TransferUpdateType
+import jp.nk5.saifu.viewmodel.transfer.TransferViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,42 +98,46 @@ class TransferFragment
      */
     @SuppressLint("NotifyDataSetChanged")
     override suspend fun updateView(updateTypes: List<UpdateType>) {
-        withContext(Dispatchers.Main) {
-            for(updateType in updateTypes) {
-                when(updateType) {
-                    //RecyclerViewに更新を通知する
-                    TransferUpdateType.LIST_UPDATE -> {
-                        recyclerView.adapter!!.notifyDataSetChanged()
-                    }
-                    //editTextを空にする
-                    TransferUpdateType.EDIT_CLEAR -> {
-                        editText.setText("")
-                    }
-                    //textView1の文字列を「未選択」にする
-                    TransferUpdateType.TEXTVIEW_AS_UNSELECTED -> {
-                        textView1.setText(R.string.lbl_unselected)
-                    }
-                    //textView1の文字列を「XXXに入金」にする
-                    TransferUpdateType.TEXTVIEW_AS_PAYMENT -> {
-                        textView1.text = "%sに入金".format(
-                            viewModel.getDebitAccount().name
-                        )
-                    }
-                    //textView1の文字列を「XXXからYYYに振替」にする
-                    TransferUpdateType.TEXTVIEW_AS_TRANSFER -> {
-                        textView1.text = "%sから%sに振替".format(
-                            viewModel.getCreditAccount().name,
-                            viewModel.getDebitAccount().name
-                        )
-                    }
-                    //textView2の文字列を「合計：XXX円」にする
-                    TransferUpdateType.TEXTVIEW_AS_SUM -> {
-                        textView2.text = "合計：%,d円".format(
-                            service.sumAmounts()
-                        )
+        try {
+            withContext(Dispatchers.Main) {
+                for (updateType in updateTypes) {
+                    when (updateType) {
+                        //RecyclerViewに更新を通知する
+                        TransferUpdateType.LIST_UPDATE -> {
+                            recyclerView.adapter!!.notifyDataSetChanged()
+                        }
+                        //editTextを空にする
+                        TransferUpdateType.EDIT_CLEAR -> {
+                            editText.setText("")
+                        }
+                        //textView1の文字列を「未選択」にする
+                        TransferUpdateType.TEXTVIEW_AS_UNSELECTED -> {
+                            textView1.setText(R.string.lbl_unselected)
+                        }
+                        //textView1の文字列を「XXXに入金」にする
+                        TransferUpdateType.TEXTVIEW_AS_PAYMENT -> {
+                            textView1.text = "%sに入金".format(
+                                viewModel.getDebitAccount().name
+                            )
+                        }
+                        //textView1の文字列を「XXXからYYYに振替」にする
+                        TransferUpdateType.TEXTVIEW_AS_TRANSFER -> {
+                            textView1.text = "%sから%sに振替".format(
+                                viewModel.getCreditAccount().name,
+                                viewModel.getDebitAccount().name
+                            )
+                        }
+                        //textView2の文字列を「合計：XXX円」にする
+                        TransferUpdateType.TEXTVIEW_AS_SUM -> {
+                            textView2.text = "合計：%,d円".format(
+                                service.sumAmounts()
+                            )
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            alert(e.toString())
         }
     }
 
@@ -145,7 +151,7 @@ class TransferFragment
             if (viewModel.isUnselected()) {alert("口座が選択されていません"); return }
             val strAmount = editText.text.toString()
             //エラーチェック：空白は受け付けない
-            if (strAmount == "") { alert("口座名が未入力です"); return }
+            if (strAmount == "") { alert("金額が未入力です"); return }
             val amount = strAmount.toInt()
             CoroutineScope(Dispatchers.Main).launch {
                 service.transfer(amount)
