@@ -1,13 +1,17 @@
 package jp.nk5.saifu.ui.receipt
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.databinding.FragmentReceiptBinding
 import jp.nk5.saifu.service.ReceiptService
+import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.ui.util.AccountSpinnerAdapter
+import jp.nk5.saifu.ui.util.DetailListAdapter
 import jp.nk5.saifu.ui.util.TitleSpinnerAdapter
 import jp.nk5.saifu.viewmodel.Observer
 import jp.nk5.saifu.viewmodel.UpdateType
@@ -19,7 +23,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class ReceiptFragment : MyFragment(), Observer {
+class ReceiptFragment
+    : MyFragment(), Observer, DetailListAdapter.OnItemClickListener {
 
     /**
      * 処理で使用するパラメータ群
@@ -34,10 +39,12 @@ class ReceiptFragment : MyFragment(), Observer {
             viewModel
         )
     }
-    private val button by lazy { binding.button1 }  //購入もしくは修正用のボタン
+    private val button1 by lazy { binding.button1 }  //購入もしくは修正用のボタン
+    private val button2 by lazy { binding.button2 }  //明細追加用のボタン
     private val editText by lazy { binding.editText1 }  //金額入力用のボタン
     private val spinner2 by lazy { binding.spinner2 } //口座選択用のスピナー
     private val spinner1 by lazy { binding.spinner1 } //口座選択用のスピナー
+    private val recyclerView by lazy { binding.recyclerView1 } //明細一覧
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -61,6 +68,12 @@ class ReceiptFragment : MyFragment(), Observer {
             _binding = FragmentReceiptBinding.inflate(inflater, container, false)
             //費用科目はDBではなくenumから作成し、かつ静的なリストであるため、ここで作成したら以後は再設定不要
             spinner1.adapter = TitleSpinnerAdapter()
+            //この時点ではviewModelの参照先メモリを共有しているだけで、その先のListは空
+            recyclerView.adapter = DetailListAdapter(
+                viewModel.details,
+                this
+            )
+            recyclerView.layoutManager = LinearLayoutManager(activity)
         }
         return binding.root
     }
@@ -75,6 +88,7 @@ class ReceiptFragment : MyFragment(), Observer {
     /**
      * 画面の更新処理、各viewModelから通知される
      */
+    @SuppressLint("NotifyDataSetChanged")
     override suspend fun updateView(updateTypes: List<UpdateType>) {
         withContext(Dispatchers.Main) {
             for (updateType in updateTypes) {
@@ -85,9 +99,22 @@ class ReceiptFragment : MyFragment(), Observer {
                             viewModel.accounts
                         )
                     }
+
+                    //RecyclerViewに更新を通知する
+                    ReceiptUpdateType.LIST_UPDATE -> {
+                        recyclerView.adapter!!.notifyDataSetChanged()
+                    }
                 }
             }
         }
+    }
+
+    override fun onItemClick(view: View) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onItemLongClick(view: View): Boolean {
+        TODO("Not yet implemented")
     }
 
 }

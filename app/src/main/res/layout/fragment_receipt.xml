@@ -18,8 +18,8 @@
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="button2"
-        app:layout_constraintTop_toTopOf="@id/spinner2" />
+        app:layout_constraintStart_toEndOf="@+id/button2"
+        app:layout_constraintTop_toTopOf="@+id/spinner2" />
 
     <Button
         android:id="@+id/button2"
