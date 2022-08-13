@@ -114,7 +114,8 @@ class TransferHistoryFragment : MyFragment(), View.OnClickListener, Observer {
             },
             viewModel.date.year, //ダイアログの初期年
             viewModel.date.month - 1, //ダイアログの初期月、ここは逆にマイナス1が必要
-            viewModel.date.day).show() //ダイアログの初期日
+            viewModel.date.day
+        ).show() //ダイアログの初期日
     }
 
 }

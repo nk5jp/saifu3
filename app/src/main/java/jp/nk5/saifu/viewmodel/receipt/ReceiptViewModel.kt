@@ -9,8 +9,7 @@ class ReceiptViewModel: MyViewModel() {
     val details = mutableListOf<ReceiptDetail>()
     val accounts = mutableListOf<Account>()
 
-    suspend fun initializeViewModel(date: MyDate, accounts: List<Account>
-    ) {
+    suspend fun initializeViewModel(date: MyDate, accounts: List<Account>) {
         this.date = date
         for (account in accounts) this.accounts.add(account)
         val types = listOf(
@@ -20,5 +19,20 @@ class ReceiptViewModel: MyViewModel() {
         )
         notifyObservers(types)
     }
+
+    suspend fun addItem(detail: ReceiptDetail) {
+        details.add(detail)
+        val types = listOf(
+            ReceiptUpdateType.LIST_UPDATE,
+            ReceiptUpdateType.EDIT_CLEAR,
+            ReceiptUpdateType.TEXT_AS_TOTAL
+        )
+        notifyObservers(types)
+    }
+
+    /**
+     * 新たにdetailsを作成するときに付与すべきIDを返却する
+     */
+    fun getNewDetailId() = details.size
 
 }

@@ -147,7 +147,7 @@ class TransferFragment
             if (viewModel.isUnselected()) {alert("口座が選択されていません"); return }
             val strAmount = editText.text.toString()
             //エラーチェック：空白は受け付けない
-            if (strAmount == "") { alert("口座名が未入力です"); return }
+            if (strAmount == "") { alert("金額が未入力です"); return }
             val amount = strAmount.toInt()
             CoroutineScope(Dispatchers.Main).launch {
                 service.transfer(amount)

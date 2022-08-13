@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import jp.nk5.saifu.R
 import jp.nk5.saifu.ui.MyFragment
 import jp.nk5.saifu.databinding.FragmentReceiptBinding
+import jp.nk5.saifu.domain.Title
 import jp.nk5.saifu.service.ReceiptService
 import jp.nk5.saifu.ui.util.AccountListAdapter
 import jp.nk5.saifu.ui.util.AccountSpinnerAdapter
@@ -24,7 +26,7 @@ import kotlinx.coroutines.withContext
 
 
 class ReceiptFragment
-    : MyFragment(), Observer, DetailListAdapter.OnItemClickListener {
+    : MyFragment(), View.OnClickListener, Observer, DetailListAdapter.OnItemClickListener {
 
     /**
      * 処理で使用するパラメータ群
@@ -66,6 +68,9 @@ class ReceiptFragment
     ): View {
         if (_binding == null) {
             _binding = FragmentReceiptBinding.inflate(inflater, container, false)
+            //各ボタンに押下時のイベントを設定
+            button1.setOnClickListener(this)
+            button2.setOnClickListener(this)
             //費用科目はDBではなくenumから作成し、かつ静的なリストであるため、ここで作成したら以後は再設定不要
             spinner1.adapter = TitleSpinnerAdapter()
             //この時点ではviewModelの参照先メモリを共有しているだけで、その先のListは空
@@ -93,19 +98,52 @@ class ReceiptFragment
         withContext(Dispatchers.Main) {
             for (updateType in updateTypes) {
                 when (updateType) {
-                    //spinnerに口座情報の一覧をセットする
+                    //spinner2に口座情報の一覧をセットする
                     ReceiptUpdateType.SPINNER_AS_ACCOUNT -> {
                         spinner2.adapter = AccountSpinnerAdapter(
                             viewModel.accounts
                         )
                     }
-
-                    //RecyclerViewに更新を通知する
+                    //editText1を空白にする
+                    ReceiptUpdateType.EDIT_CLEAR -> {
+                        editText.setText("")
+                    }
+                    //RecyclerView1に更新を通知する
                     ReceiptUpdateType.LIST_UPDATE -> {
                         recyclerView.adapter!!.notifyDataSetChanged()
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 追加ボタンもしくは購入ボタンを押下したときの処理
+     * 画面上にボタンが複数存在するので、場合分けで処理を選別する
+     * View.OnClickListenerで定義されている関数の実装
+     */
+    override fun onClick(view: View) {
+        try {
+            when (view.id) {
+                //購入（修正）ボタン押下時
+                R.id.button1 -> {
+
+                }
+                //追加ボタン押下時
+                R.id.button2 -> {
+                    //spinner1から選択している費用科目を取得する
+                    val title = spinner1.selectedItem as Title
+                    val strAmount = editText.text.toString()
+                    //エラーチェック：空白は受け付けない
+                    if (strAmount == "") { alert("金額が未入力です"); return }
+                    val amount = strAmount.toInt()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        service.addDetail(title, amount)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            alert(e.toString())
         }
     }
 
@@ -116,5 +154,4 @@ class ReceiptFragment
     override fun onItemLongClick(view: View): Boolean {
         TODO("Not yet implemented")
     }
-
 }
