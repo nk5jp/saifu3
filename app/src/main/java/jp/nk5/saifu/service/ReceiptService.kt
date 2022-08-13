@@ -39,4 +39,11 @@ class ReceiptService(
         )
     }
 
+    /**
+     * 対象明細の税種別の変更を依頼する
+     * 内税⇒外税8%⇒外税10%⇒内税の順番に変更する
+     */
+    suspend fun changeTaxType(position: Int) {
+        viewModel.changeTaxType(position)
+    }
 }

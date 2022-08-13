@@ -38,6 +38,24 @@ class ReceiptViewModel: MyViewModel() {
     }
 
     /**
+     * 指定した位置の明細の勢種別を変更し、再描画を通知する
+     * 内税⇒外税8%⇒外税10%⇒内税の順番に変更する
+     */
+    suspend fun changeTaxType(position: Int) {
+        val detail = details[position]
+        when (detail.taxType) {
+            TaxType.INCLUDE -> detail.taxType = TaxType.EXCLUDE_EIGHT
+            TaxType.EXCLUDE_EIGHT -> detail.taxType = TaxType.EXCLUDE_TEN
+            TaxType.EXCLUDE_TEN -> detail.taxType = TaxType.INCLUDE
+        }
+        val types = listOf(
+            ReceiptUpdateType.LIST_UPDATE,
+            ReceiptUpdateType.TEXT_AS_TOTAL
+        )
+        notifyObservers(types)
+    }
+
+    /**
      * 新たにdetailsを作成するときに付与すべきIDを返却する
      */
     fun getNewDetailId() = details.size

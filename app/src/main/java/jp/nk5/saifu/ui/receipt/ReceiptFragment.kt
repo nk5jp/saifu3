@@ -156,8 +156,19 @@ class ReceiptFragment
         }
     }
 
+    /**
+     * 選択した明細の税種別を変更する
+     * 内税⇒外税8%⇒外税10%⇒内税の順番に変更する
+     */
     override fun onItemClick(view: View) {
-        TODO("Not yet implemented")
+        try {
+            val position = recyclerView.getChildAdapterPosition(view)
+            CoroutineScope(Dispatchers.Main).launch {
+                service.changeTaxType(position)
+            }
+        } catch (e: Exception) {
+            alert(e.toString())
+        }
     }
 
     override fun onItemLongClick(view: View): Boolean {
