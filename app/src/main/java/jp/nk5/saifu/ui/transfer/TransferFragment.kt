@@ -98,42 +98,46 @@ class TransferFragment
      */
     @SuppressLint("NotifyDataSetChanged")
     override suspend fun updateView(updateTypes: List<UpdateType>) {
-        withContext(Dispatchers.Main) {
-            for(updateType in updateTypes) {
-                when(updateType) {
-                    //RecyclerViewに更新を通知する
-                    TransferUpdateType.LIST_UPDATE -> {
-                        recyclerView.adapter!!.notifyDataSetChanged()
-                    }
-                    //editTextを空にする
-                    TransferUpdateType.EDIT_CLEAR -> {
-                        editText.setText("")
-                    }
-                    //textView1の文字列を「未選択」にする
-                    TransferUpdateType.TEXTVIEW_AS_UNSELECTED -> {
-                        textView1.setText(R.string.lbl_unselected)
-                    }
-                    //textView1の文字列を「XXXに入金」にする
-                    TransferUpdateType.TEXTVIEW_AS_PAYMENT -> {
-                        textView1.text = "%sに入金".format(
-                            viewModel.getDebitAccount().name
-                        )
-                    }
-                    //textView1の文字列を「XXXからYYYに振替」にする
-                    TransferUpdateType.TEXTVIEW_AS_TRANSFER -> {
-                        textView1.text = "%sから%sに振替".format(
-                            viewModel.getCreditAccount().name,
-                            viewModel.getDebitAccount().name
-                        )
-                    }
-                    //textView2の文字列を「合計：XXX円」にする
-                    TransferUpdateType.TEXTVIEW_AS_SUM -> {
-                        textView2.text = "合計：%,d円".format(
-                            service.sumAmounts()
-                        )
+        try {
+            withContext(Dispatchers.Main) {
+                for (updateType in updateTypes) {
+                    when (updateType) {
+                        //RecyclerViewに更新を通知する
+                        TransferUpdateType.LIST_UPDATE -> {
+                            recyclerView.adapter!!.notifyDataSetChanged()
+                        }
+                        //editTextを空にする
+                        TransferUpdateType.EDIT_CLEAR -> {
+                            editText.setText("")
+                        }
+                        //textView1の文字列を「未選択」にする
+                        TransferUpdateType.TEXTVIEW_AS_UNSELECTED -> {
+                            textView1.setText(R.string.lbl_unselected)
+                        }
+                        //textView1の文字列を「XXXに入金」にする
+                        TransferUpdateType.TEXTVIEW_AS_PAYMENT -> {
+                            textView1.text = "%sに入金".format(
+                                viewModel.getDebitAccount().name
+                            )
+                        }
+                        //textView1の文字列を「XXXからYYYに振替」にする
+                        TransferUpdateType.TEXTVIEW_AS_TRANSFER -> {
+                            textView1.text = "%sから%sに振替".format(
+                                viewModel.getCreditAccount().name,
+                                viewModel.getDebitAccount().name
+                            )
+                        }
+                        //textView2の文字列を「合計：XXX円」にする
+                        TransferUpdateType.TEXTVIEW_AS_SUM -> {
+                            textView2.text = "合計：%,d円".format(
+                                service.sumAmounts()
+                            )
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            alert(e.toString())
         }
     }
 

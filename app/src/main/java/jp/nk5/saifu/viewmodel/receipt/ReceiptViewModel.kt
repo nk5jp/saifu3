@@ -9,6 +9,10 @@ class ReceiptViewModel: MyViewModel() {
     val details = mutableListOf<ReceiptDetail>()
     val accounts = mutableListOf<Account>()
 
+    /**
+     * 新規のレシート作成画面の初期化処理。
+     * 作成日付を代入し、spinner用の口座一覧をセットしてから、再描画を通知する
+     */
     suspend fun initializeViewModel(date: MyDate, accounts: List<Account>) {
         this.date = date
         for (account in accounts) this.accounts.add(account)
@@ -20,6 +24,9 @@ class ReceiptViewModel: MyViewModel() {
         notifyObservers(types)
     }
 
+    /**
+     * 明細の一覧に新たなアイテムを設定し、再描画を通知する
+     */
     suspend fun addItem(detail: ReceiptDetail) {
         details.add(detail)
         val types = listOf(
@@ -34,5 +41,4 @@ class ReceiptViewModel: MyViewModel() {
      * 新たにdetailsを作成するときに付与すべきIDを返却する
      */
     fun getNewDetailId() = details.size
-
 }

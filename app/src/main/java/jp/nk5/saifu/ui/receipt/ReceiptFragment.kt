@@ -34,7 +34,7 @@ class ReceiptFragment
     private var _binding: FragmentReceiptBinding? = null
     private val binding get() = _binding!! //レイアウト情報
     private val viewModel by lazy { ReceiptViewModel() } //本画面のviewModel
-    private val service by lazy {
+    private val service by lazy { //本画面のservice
         ReceiptService(
             common.accountRepository,
             common.receiptRepository,
@@ -83,6 +83,11 @@ class ReceiptFragment
         return binding.root
     }
 
+    /**
+     * viewModel内のデータ初期化と描画を行う
+     * この処理は必ずonCreateViewの後に来るため、順序性管理の必要がある処理はこちらに記載する
+     * なお、こちらの通過ルールもonCreateViewに順ずる
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Main).launch {
@@ -95,25 +100,29 @@ class ReceiptFragment
      */
     @SuppressLint("NotifyDataSetChanged")
     override suspend fun updateView(updateTypes: List<UpdateType>) {
-        withContext(Dispatchers.Main) {
-            for (updateType in updateTypes) {
-                when (updateType) {
-                    //spinner2に口座情報の一覧をセットする
-                    ReceiptUpdateType.SPINNER_AS_ACCOUNT -> {
-                        spinner2.adapter = AccountSpinnerAdapter(
-                            viewModel.accounts
-                        )
-                    }
-                    //editText1を空白にする
-                    ReceiptUpdateType.EDIT_CLEAR -> {
-                        editText.setText("")
-                    }
-                    //RecyclerView1に更新を通知する
-                    ReceiptUpdateType.LIST_UPDATE -> {
-                        recyclerView.adapter!!.notifyDataSetChanged()
+        try {
+            withContext(Dispatchers.Main) {
+                for (updateType in updateTypes) {
+                    when (updateType) {
+                        //spinner2に口座情報の一覧をセットする
+                        ReceiptUpdateType.SPINNER_AS_ACCOUNT -> {
+                            spinner2.adapter = AccountSpinnerAdapter(
+                                viewModel.accounts
+                            )
+                        }
+                        //editText1を空白にする
+                        ReceiptUpdateType.EDIT_CLEAR -> {
+                            editText.setText("")
+                        }
+                        //RecyclerView1に更新を通知する
+                        ReceiptUpdateType.LIST_UPDATE -> {
+                            recyclerView.adapter!!.notifyDataSetChanged()
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            alert(e.toString())
         }
     }
 

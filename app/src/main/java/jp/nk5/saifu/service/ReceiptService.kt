@@ -14,6 +14,9 @@ class ReceiptService(
     val viewModel: ReceiptViewModel
 ) {
 
+    /**
+     * viewModelに最新の有効口座一覧を共有し、画面を再描画する（後者はviewModelの責務）
+     */
     suspend fun initializeView() {
         val accounts = accountRepository.getValidAccounts()
         viewModel.initializeViewModel(
@@ -22,6 +25,9 @@ class ReceiptService(
         )
     }
 
+    /**
+     * viewModelに新たな明細を共有し、画面を再描画する（後者はviewModelの責務）
+     */
     suspend fun addDetail(title: Title, amount: Int) {
         viewModel.addItem(
             ReceiptDetail(
