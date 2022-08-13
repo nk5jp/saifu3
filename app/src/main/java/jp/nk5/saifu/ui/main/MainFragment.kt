@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import jp.nk5.saifu.R
@@ -33,7 +34,12 @@ class MainFragment
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!! //レイアウト情報
     private val viewModel by lazy { MainViewModel() } //本画面のviewModel
-    private val service by lazy { MainService(common.receiptRepository, viewModel) } //Service
+    private val service by lazy {
+        MainService(
+            common.receiptRepository,
+            common.accountRepository,
+            viewModel
+        ) } //Service
     private val button by lazy { binding.button4 }  //検索用のボタン
     private val recyclerView by lazy { binding.recyclerView1 } //レシート一覧のrecyclerView
 
@@ -165,8 +171,33 @@ class MainFragment
         }
     }
 
+    /**
+     * 長押しした行のレシートを削除して良いか伺うダイアログを表示する
+     * ReceiptListAdapter.OnItemClickListenerで定義されている関数の実装
+     */
     override fun onItemLongClick(view: View): Boolean {
-        TODO("Not yet implemented")
+        try {
+            val position = recyclerView.getChildAdapterPosition(view)
+            AlertDialog.Builder(requireContext())
+                .setTitle("レシートを削除しますか？")
+                .setMessage("削除後は元に戻せません")
+                .setPositiveButton("YES") { _, _ ->
+                    //YES押下時：対象レシートを削除する
+                    try {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            service.deleteReceipt(position)
+                        }
+                    } catch (e: Exception) {
+                        alert(e.toString())
+                    }
+                }
+                .setNegativeButton("NO") { _, _ ->
+                    //NO押下時：何も実行しない
+                }.show()
+        } catch (e: Exception) {
+            alert(e.toString())
+        }
+        return true
     }
 
 }
