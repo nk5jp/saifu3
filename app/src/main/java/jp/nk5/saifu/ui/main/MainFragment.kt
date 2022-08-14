@@ -1,11 +1,11 @@
 package jp.nk5.saifu.ui.main
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CalendarView
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainFragment
-    : MyFragment(), Observer, View.OnClickListener, ReceiptListAdapter.OnItemClickListener
+    : MyFragment(), Observer,
+    ReceiptListAdapter.OnItemClickListener, CalendarView.OnDateChangeListener
 {
 
     /**
@@ -40,8 +41,8 @@ class MainFragment
             common.accountRepository,
             viewModel
         ) } //Service
-    private val button by lazy { binding.button4 }  //検索用のボタン
     private val recyclerView by lazy { binding.recyclerView1 } //レシート一覧のrecyclerView
+    private val calendarView by lazy { binding.calendarView1 } //カレンダービュー
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -65,7 +66,7 @@ class MainFragment
         if (_binding == null) {
             //以下の一連の処理はインスタンスを初期生成したときのみ通過する
             _binding = FragmentMainBinding.inflate(inflater, container, false)
-            button.setOnClickListener(this)
+            calendarView.setOnDateChangeListener(this)
             //この時点ではviewModelの参照先メモリを共有しているだけで、その先のListは空
             recyclerView.adapter = ReceiptListAdapter(
                 viewModel.receipts,
@@ -114,14 +115,6 @@ class MainFragment
                         MainUpdateType.LIST_UPDATE -> {
                             recyclerView.adapter!!.notifyDataSetChanged()
                         }
-                        //buttonの文字列を「YYYY/MM/DD」にする
-                        MainUpdateType.BUTTON_AS_DATE -> {
-                            button.text = getString(R.string.btn_ymd).format(
-                                viewModel.date.year,
-                                viewModel.date.month,
-                                viewModel.date.day
-                            )
-                        }
                     }
                 }
             }
@@ -133,7 +126,6 @@ class MainFragment
     /**
      * 検索対象の年月日を指定して検索処理を実行する。
      * View.OnClickListenerで定義されている関数の実装
-     */
     override fun onClick(view: View) {
         try {
             DatePickerDialog(
@@ -152,6 +144,7 @@ class MainFragment
             alert(e.toString())
         }
     }
+     */
 
     /**
      * 選択した行番号に対応づくレシートの作成日とidを用いてレシート編集画面に遷移する
@@ -198,6 +191,21 @@ class MainFragment
             alert(e.toString())
         }
         return true
+    }
+
+    /**
+     * 検索対象の年月日を指定して検索処理を実行する。
+     * CalendarView.OnDateChangeListenerで定義されている関数の実装
+     */
+    override fun onSelectedDayChange(view: CalendarView, year: Int, month: Int, day: Int) {
+        try {
+            CoroutineScope(Dispatchers.Main).launch {
+                //1月は0月となっているので、サービスに渡す月は+1しておく
+                service.updateView(MyDate(year, month + 1, day))
+            }
+        } catch (e: Exception) {
+            alert(e.toString())
+        }
     }
 
 }
