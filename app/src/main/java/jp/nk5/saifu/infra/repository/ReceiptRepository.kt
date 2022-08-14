@@ -65,7 +65,38 @@ class ReceiptRepository(
     override suspend fun getReceiptByYmd(date: MyDate)
     : MutableList<Receipt> = withContext(Dispatchers.IO) {
         //DBから該当レコード群をMapとして取得し、ドメインに変換していく
-        db.receiptDao().selectByYearMonth(date.getYmd()).map { e ->
+        db.receiptDao().selectByYmd(date.getYmd()).map { e ->
+            //e.keyがEntityReceipt、e.valueがList<EntityReceiptDetails>
+            val receiptDetails = mutableListOf<ReceiptDetail>()
+            //detailsの変換
+            for (detail in e.value) {
+                receiptDetails.add(
+                    ReceiptDetail(
+                        detail.detailId,
+                        Title.getTitleById(detail.titleId),
+                        detail.amount,
+                        TaxType.getTaxTypeById(detail.taxTypeId)
+                    )
+                )
+            }
+            //receiptの変換
+            Receipt(
+                e.key.id,
+                MyDate(e.key.date),
+                accountRepository.getAccountById(e.key.accountId),
+                receiptDetails
+            )
+        }.toMutableList()
+    }
+
+    /**
+     * 指定した期間内に作成されたレシートのリストを取得する処理
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
+     */
+    override suspend fun getReceiptByDuration(fromDate: MyDate, toDate: MyDate)
+            : MutableList<Receipt> = withContext(Dispatchers.IO) {
+        //DBから該当レコード群をMapとして取得し、ドメインに変換していく
+        db.receiptDao().selectByDuration(fromDate.getYmd(), toDate.getYmd()).map { e ->
             //e.keyがEntityReceipt、e.valueがList<EntityReceiptDetails>
             val receiptDetails = mutableListOf<ReceiptDetail>()
             //detailsの変換
