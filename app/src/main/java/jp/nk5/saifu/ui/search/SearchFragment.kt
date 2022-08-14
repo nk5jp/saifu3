@@ -41,6 +41,7 @@ class SearchFragment : MyFragment(), Observer, View.OnClickListener {
     private val button2 by lazy { binding.button2 } //検索対象の上限年月日を設定するためのbutton
     private val button3 by lazy { binding.button3 } //検索対象の下限年月日を設定するためのbutton
     private val recyclerView by lazy { binding.recyclerView1 } //科目ごとの金額を設定するrecyclerView
+    private val textView by lazy { binding.textView1 } //合計金額出力用のtextView
 
     /**
      * viewModelの監視対象にこのフラグメントを追加する
@@ -121,6 +122,12 @@ class SearchFragment : MyFragment(), Observer, View.OnClickListener {
                                 viewModel.toDate.day
                             )
                         }
+                        //textViewに総支出と総収入を反映する
+                        SearchUpdateType.TEXT_AS_TOTAL -> {
+                            textView.text = "支出：%,d円 収入：%,d円".format(
+                                viewModel.loss, viewModel.profit
+                            )
+                        }
                     }
                 }
             }
@@ -129,6 +136,10 @@ class SearchFragment : MyFragment(), Observer, View.OnClickListener {
         }
     }
 
+    /**
+     * viewのidでどちらのボタンが押下されたかを判断し、日付指定用のダイアログを出力する
+     * View.OnClickListenerの実装
+     */
     override fun onClick(view: View) {
         try {
             when (view.id) {

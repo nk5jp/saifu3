@@ -7,7 +7,7 @@ package jp.nk5.saifu.domain
  */
 enum class Title(val id: Int, val text: String) {
     FOOD(1,"食費"),
-    EQUIP(2,"設備費"),
+    EQUIP(2,"備品設備費"),
     SELF(3,"自己啓発費"),
     ENTERTAINMENT(4, "娯楽費"),
     UTIL(5, "光熱費"),

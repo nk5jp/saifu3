@@ -58,4 +58,33 @@ class TransferRepository(
             }
         }.toMutableList()
     }
+
+    /**
+     * 指定した期間に該当するTransferのリストを返却する。
+     * 用途を踏まえ、このリストは永続化しない。すなわち、2度コールした場合、論理的に同じ振替でも別のインスタンスとなる。
+     * IO処理を含むためsuspend functionとして宣言している。コルーチン内で宣言すること。
+     * また、この処理は例外をスローし得る（getAccountById）点を留意すること
+     */
+    override suspend fun getTransferByDuration(fromDate: MyDate, toDate: MyDate)
+            : List<Transfer> = withContext(Dispatchers.IO) {
+        db.transferDao().selectByDuration(fromDate.getYmd(), toDate.getYmd()).map { e ->
+            if (e.creditId == null) {
+                Transfer(
+                    e.id,
+                    MyDate(e.date),
+                    accountRepository.getAccountById(e.debitId),
+                    null,
+                    e.amount
+                )
+            } else {
+                Transfer(
+                    e.id,
+                    MyDate(e.date),
+                    accountRepository.getAccountById(e.debitId),
+                    accountRepository.getAccountById(e.creditId),
+                    e.amount
+                )
+            }
+        }.toMutableList()
+    }
 }

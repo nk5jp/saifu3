@@ -16,6 +16,8 @@ class SearchService(
 
     suspend fun updateView() {
         val receipts = receiptRepository.getReceiptByDuration(viewModel.fromDate, viewModel.toDate)
+        val transfers = transferRepository.getTransferByDuration(viewModel.fromDate, viewModel.toDate)
+
         val titleRows = mutableListOf<TitleListAdapter.TitleRow>()
 
         /**
@@ -44,6 +46,7 @@ class SearchService(
 
         //合計支出を算出する、レシート基準なので科目ごとの合計から数円ずれる可能性があるが許容する
         viewModel.loss = receipts.sumOf { it.sum()[0] }
+        viewModel.profit = transfers.filter { it.credit == null }.sumOf { it.amount }
 
         viewModel.updateView(titleRows)
     }
