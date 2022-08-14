@@ -98,7 +98,8 @@ class MainFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Main).launch {
-            service.updateView(MyDate.today())
+            //recyclerViewを初期化する
+            service.initializeView()
         }
     }
 
@@ -122,29 +123,6 @@ class MainFragment
             alert(e.toString())
         }
     }
-
-    /**
-     * 検索対象の年月日を指定して検索処理を実行する。
-     * View.OnClickListenerで定義されている関数の実装
-    override fun onClick(view: View) {
-        try {
-            DatePickerDialog(
-                requireActivity(),
-                { _, year, month, day ->
-                    CoroutineScope(Dispatchers.Main).launch {
-                        //1月は0月となっているので、サービスに渡す月は+1しておく
-                        service.updateView(MyDate(year, month + 1, day))
-                    }
-                },
-                viewModel.date.year, //ダイアログの初期年
-                viewModel.date.month - 1, //ダイアログの初期月、ここは逆にマイナス1が必要
-                viewModel.date.day
-            ).show() //ダイアログの初期日
-        } catch (e: Exception) {
-            alert(e.toString())
-        }
-    }
-     */
 
     /**
      * 選択した行番号に対応づくレシートの作成日とidを用いてレシート編集画面に遷移する

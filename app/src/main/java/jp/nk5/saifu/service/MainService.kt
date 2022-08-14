@@ -20,6 +20,15 @@ class MainService(
     }
 
     /**
+     * viewModelで保持している日付（初期値は本日）のレシートを取得し、
+     * 画面の再描画を実施する（後者はviewModelの責務）
+     */
+    suspend fun initializeView() {
+        val receipts = receiptRepository.getReceiptByYmd(viewModel.date)
+        viewModel.updateList(receipts)
+    }
+
+    /**
      * 指定した行のレシートを削除した上でリストを再取得し、画面の再描画を実施する（後者はviewModelの責務）
      */
     suspend fun deleteReceipt(position: Int) {
