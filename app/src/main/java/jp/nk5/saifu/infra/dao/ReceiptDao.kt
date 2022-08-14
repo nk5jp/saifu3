@@ -8,7 +8,10 @@ import jp.nk5.saifu.infra.entity.EntityReceiptDetail
 interface ReceiptDao {
 
     @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.date = :ymd")
-    fun selectByYearMonth(ymd: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
+    fun selectByYmd(ymd: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
+
+    @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.date >= :fromYmd and receipts.date <= :toYmd")
+    fun selectByDuration(fromYmd: Int, toYmd: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
 
     @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.id = :id")
     fun selectById(id: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
