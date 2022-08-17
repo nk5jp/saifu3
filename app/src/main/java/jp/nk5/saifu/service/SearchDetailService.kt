@@ -22,6 +22,9 @@ class SearchDetailService(
         viewModel.initializeView(accounts)
     }
 
+    /**
+     * レシートの一覧を入手し、画面を更新する。
+     */
     suspend fun updateView(account: Account) {
         //対象期間のレシートを抽出
         val allReceipts = receiptRepository.getReceiptByDuration(

@@ -3,7 +3,7 @@ package jp.nk5.saifu.domain.repository
 import jp.nk5.saifu.domain.Account
 
 /**
- * Accountを管理するRepository
+ * 口座を管理するRepository
  */
 interface AccountRepository {
     suspend fun setAccount(account: Account)

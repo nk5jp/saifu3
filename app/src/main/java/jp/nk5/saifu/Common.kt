@@ -14,15 +14,14 @@ import jp.nk5.saifu.infra.repository.TransferRepository
  */
 class Common: Application() {
 
+    //共通的な変数
     private val db: AppDatabase by lazy {
         Room.databaseBuilder(
             this,
             AppDatabase::class.java, "saifu3-db"
         ).build()
     }
-
     val accountRepository by lazy { AccountRepository(db) }
     val transferRepository by lazy { TransferRepository(db, accountRepository) }
     val receiptRepository by lazy { ReceiptRepository(db, accountRepository) }
-
 }
