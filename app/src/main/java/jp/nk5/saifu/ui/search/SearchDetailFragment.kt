@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.LinearLayoutManager
 import jp.nk5.saifu.R
 import jp.nk5.saifu.databinding.FragmentSearchDetailBinding
@@ -24,7 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchDetailFragment : MyFragment(), Observer, View.OnClickListener {
+class SearchDetailFragment
+    : MyFragment(), Observer, View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     /**
      * 処理で使用するパラメータ群
@@ -69,6 +71,7 @@ class SearchDetailFragment : MyFragment(), Observer, View.OnClickListener {
             _binding = FragmentSearchDetailBinding.inflate(inflater, container, false)
             button1.setOnClickListener(this)
             button2.setOnClickListener(this)
+            spinner.onItemSelectedListener = this
             //この時点ではviewModelの参照先メモリを共有しているだけで、その先のListは空
             recyclerView.adapter = ReceiptForSearchListAdapter(
                 viewModel.receipts
@@ -99,6 +102,7 @@ class SearchDetailFragment : MyFragment(), Observer, View.OnClickListener {
             withContext(Dispatchers.Main) {
                 for (updateType in updateTypes) {
                     when (updateType) {
+                        //Spinner1にデータをセットしリスナーを設定する
                         SearchDetailUpdateType.SPINNER_AS_ACCOUNT -> {
                             spinner.adapter = AccountSpinnerAdapter(
                                 viewModel.accounts
@@ -187,5 +191,23 @@ class SearchDetailFragment : MyFragment(), Observer, View.OnClickListener {
         } catch (e: Exception) {
             alert(e.toString())
         }
+    }
+
+    /**
+     * viewのidでどちらのボタンが押下されたかを判断し、日付指定用のダイアログを出力する
+     * View.OnClickListenerの実装
+     */
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val account = spinner.selectedItem as Account
+        CoroutineScope(Dispatchers.Main).launch {
+            service.updateView(account)
+        }
+    }
+
+    /**
+     * アダプターがemptyになったときに選ばれる処理。本Fragmentでは通り得ないが実装が必要。
+     */
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        return
     }
 }
