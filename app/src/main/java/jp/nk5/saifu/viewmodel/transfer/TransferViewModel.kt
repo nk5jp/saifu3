@@ -20,7 +20,8 @@ class TransferViewModel: MyViewModel() {
         val types = listOf(
             TransferUpdateType.LIST_UPDATE,
             TransferUpdateType.TEXTVIEW_AS_UNSELECTED,
-            TransferUpdateType.TEXTVIEW_AS_SUM
+            TransferUpdateType.TEXTVIEW_AS_SUM,
+            TransferUpdateType.EDIT_CLEAR
         )
         notifyObservers(types)
     }
@@ -34,7 +35,8 @@ class TransferViewModel: MyViewModel() {
         val types = listOf(
             TransferUpdateType.LIST_UPDATE,
             TransferUpdateType.TEXTVIEW_AS_UNSELECTED,
-            TransferUpdateType.TEXTVIEW_AS_SUM
+            TransferUpdateType.TEXTVIEW_AS_SUM,
+            TransferUpdateType.EDIT_CLEAR
         )
         notifyObservers(types)
     }
