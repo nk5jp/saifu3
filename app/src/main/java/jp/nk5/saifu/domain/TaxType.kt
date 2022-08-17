@@ -10,6 +10,9 @@ enum class TaxType(val id: Int, val rate: Int) {
     EXCLUDE_TEN(3, 10); //税抜き10%の金額
 
     companion object {
+        /**
+         * IDに紐づくENUMを返却する
+         */
         fun getTaxTypeById(id: Int): TaxType {
             return when(id) {
                 1 -> INCLUDE

@@ -4,7 +4,7 @@ import jp.nk5.saifu.domain.MyDate
 import jp.nk5.saifu.domain.Transfer
 
 /**
- * Transferを管理するRepository
+ * 振替を管理するRepository
  */
 interface TransferRepository {
     suspend fun setTransfer(transfer: Transfer)

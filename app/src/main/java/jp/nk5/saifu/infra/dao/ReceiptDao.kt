@@ -7,17 +7,27 @@ import jp.nk5.saifu.infra.entity.EntityReceiptDetail
 @Dao
 interface ReceiptDao {
 
-    @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.date = :ymd")
+    @Query("select * from receipts " +
+            "inner join receipt_details " +
+            "on receipts.id = receipt_details.receipt_id " +
+            "where receipts.date = :ymd")
     fun selectByYmd(ymd: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
 
-    @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.date >= :fromYmd and receipts.date <= :toYmd")
+    @Query("select * from receipts " +
+            "inner join receipt_details " +
+            "on receipts.id = receipt_details.receipt_id " +
+            "where receipts.date >= :fromYmd and receipts.date <= :toYmd")
     fun selectByDuration(fromYmd: Int, toYmd: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
 
-    @Query("select * from receipts inner join receipt_details on receipts.id = receipt_details.receipt_id where receipts.id = :id")
+    @Query("select * from receipts " +
+            "inner join receipt_details " +
+            "on receipts.id = receipt_details.receipt_id " +
+            "where receipts.id = :id")
     fun selectById(id: Int): Map<EntityReceipt, List<EntityReceiptDetail>>
 
     @Insert
     fun insertReceipt(receipt: EntityReceipt): Long
+
     @Insert
     fun insertReceiptDetail(detail: EntityReceiptDetail): Long
 
@@ -29,5 +39,4 @@ interface ReceiptDao {
 
     @Query("delete from receipt_details where receipt_id = :id")
     fun deleteReceiptDetailsById(id: Int)
-
 }

@@ -7,4 +7,10 @@ package jp.nk5.saifu.domain
  * debitが借方、creditが貸方
  * amountには貸方から借方への流入資金量が表現される、キャンセルの可能性あがるので一応マイナスは許容
  */
-open class Transfer(var id: Int, val date: MyDate, val debit: Account, val credit: Account?, val amount: Int)
+open class Transfer(
+    var id: Int,
+    val date: MyDate,
+    val debit: Account,
+    val credit: Account?,
+    val amount: Int
+    )

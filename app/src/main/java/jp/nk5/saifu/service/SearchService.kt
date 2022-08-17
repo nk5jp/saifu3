@@ -14,15 +14,22 @@ class SearchService(
     private val viewModel: SearchViewModel
 ) {
 
+    /**
+     * 費用科目別の合計値を計算し、viewModelに反映する
+     */
     suspend fun updateView() {
-        val receipts = receiptRepository.getReceiptByDuration(viewModel.fromDate, viewModel.toDate)
-        val transfers = transferRepository.getTransferByDuration(viewModel.fromDate, viewModel.toDate)
+        val receipts = receiptRepository.getReceiptByDuration(
+            viewModel.fromDate,
+            viewModel.toDate
+        )
+        val transfers = transferRepository.getTransferByDuration(
+            viewModel.fromDate,
+            viewModel.toDate
+        )
 
         val titleRows = mutableListOf<TitleListAdapter.TitleRow>()
 
-        /**
-         * それぞれの科目の内税・外税8%・外税10%をタンキングするための中間map
-         */
+        //それぞれの科目の内税・外税8%・外税10%をタンキングするための中間map
         val sums = mutableMapOf<Title, Array<Int>>()
         for (title in Title.titles) sums[title] = arrayOf(0, 0, 0)
 
@@ -51,11 +58,17 @@ class SearchService(
         viewModel.updateView(titleRows)
     }
 
+    /**
+     * viewModelに検索日付の下限を共有し、画面を更新する（後者はviewModelの責務）
+     */
     suspend fun updateFromDate(date: MyDate) {
         viewModel.fromDate = date
         updateView()
     }
 
+    /**
+     * viewModelに検索日付の上限を共有し、画面を更新する（後者はviewModelの責務）
+     */
     suspend fun updateToDate(date: MyDate) {
         viewModel.toDate = date
         updateView()

@@ -12,6 +12,7 @@ class MyDate {
     val day: Int
 
     companion object {
+        //呼び出したタイミングの当日日付のMyDateインスタンスを返却する
         fun today(): MyDate {
             val date = LocalDate.now()
             return MyDate(date.year, date.monthValue, date.dayOfMonth)
@@ -30,10 +31,16 @@ class MyDate {
         day = _day
     }
 
+    /**
+     * インスタンスの年月日をyyyymmdd形式のInt型で返却する
+     */
     fun getYmd(): Int {
         return year * 10000 + month * 100 + day
     }
 
+    /**
+     * インスタンスの年月をyyyymm形式のInt型で返却する
+     */
     fun getYm(): Int {
         return year * 100 + month
     }
