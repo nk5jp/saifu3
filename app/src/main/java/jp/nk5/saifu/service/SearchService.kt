@@ -51,11 +51,17 @@ class SearchService(
         viewModel.updateView(titleRows)
     }
 
+    /**
+     * viewModelに検索日付の下限を共有し、画面を更新する（後者はviewModelの責務）
+     */
     suspend fun updateFromDate(date: MyDate) {
         viewModel.fromDate = date
         updateView()
     }
 
+    /**
+     * viewModelに検索日付の上限を共有し、画面を更新する（後者はviewModelの責務）
+     */
     suspend fun updateToDate(date: MyDate) {
         viewModel.toDate = date
         updateView()
