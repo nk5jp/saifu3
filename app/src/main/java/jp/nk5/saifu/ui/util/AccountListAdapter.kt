@@ -43,6 +43,8 @@ class AccountListAdapter(
         viewHolder.textView2.text = "%,d円".format(dataSet[position].amount)
         if (dataSet[position].amount < 0) {
             viewHolder.textView2.setTextColor(Color.RED)
+        } else {
+            viewHolder.textView2.setTextColor(Color.GRAY)
         }
         if (position in selectedPosition) {
             viewHolder.textView1.setBackgroundColor(Color.YELLOW)
